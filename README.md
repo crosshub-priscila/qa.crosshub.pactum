@@ -19,6 +19,11 @@ ambiente, e não em `data/`, porque este repositório é público. Como o
 `pre-setup` redefine a senha dessas contas a cada execução, trocar o valor é
 só rodar `npm run pre-setup` de novo.
 
+O `pre-setup` também provisiona organizações via
+`POST /dashboard/test-fixtures/tenant`. No `.env.<ambiente>` da suíte, defina
+`TEST_FIXTURES_SECRET` com o **mesmo valor** que a API usa quando
+`TEST_FIXTURES_ENABLED=true` (ver `.env.localhost.example`).
+
 ### Rotas de apoio da API (só localhost)
 
 Os casos que precisam de precondição impossível pela API normal — "reserva
