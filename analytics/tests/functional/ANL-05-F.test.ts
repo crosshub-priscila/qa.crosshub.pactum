@@ -1,5 +1,4 @@
 import {
-	addonsBusiness,
 	appointmentsBusiness,
 	assertTs,
 	authBusiness,
@@ -23,23 +22,7 @@ describe(describeName.dashboard, () => {
 	let personId: string
 	let personEmail: string
 
-	before("Add-on ativo, um atendimento no dia do caso e um admin sem autorização", async () => {
-		const platformParams = await authBusiness.loginAsPlatformAdmin(
-			`${process.env.ADMIN_EMAIL}`,
-			`${process.env.ADMIN_PASSWORD}`,
-			analyticsANL05.loginParams,
-		)
-		const tenantId = await addonsBusiness.tenantIdBySlug(
-			`${process.env.TENANT_SLUG}`,
-			platformParams,
-		)
-
-		await addonsBusiness.setAddOnStatus(
-			tenantId,
-			analyticsANL05.addOnCode,
-			"active",
-			platformParams,
-		)
+	before("Um atendimento no dia do caso e um admin sem autorização", async () => {
 
 		primaryParams = await authBusiness.loginAsTenantAdmin(
 			`${process.env.TENANT_SLUG}`,

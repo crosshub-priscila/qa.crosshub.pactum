@@ -28,12 +28,10 @@ export const menuMN01 = {
 }
 
 /**
- * `API-MN-02` — token inválido e admin desativado.
+ * `API-MN-02` — token adulterado recusado com 401.
  *
- * A variação "token expirado" fica de fora: o TTL é de 15 minutos e assinar um
- * token vencido exigiria o `JWT_ACCESS_SECRET` da API, que a suíte não conhece
- * — e nem deveria. As outras duas variações cobrem o que importa, inclusive a
- * reconferência de `isActive` a cada requisição.
+ * A variação "admin desativado" saiu com as rotas de gestão de administrador
+ * do Super Admin (ADR-002). Token expirado continua de fora: exigiria o segredo JWT da API.
  */
 export const menuMN02 = {
 	...menuDefaults,

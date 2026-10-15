@@ -4,14 +4,8 @@
  * Usar sempre `${process.env.BASE_URL}${apiName.<chave>}/...` nos services.
  */
 export const apiName = {
-	// Autenticação
+	// Autenticação (tenant e app do usuário final)
 	authPlatform: "/auth/platform",
-
-	// Área do super admin da plataforma
-	adminAddOns: "/admin/add-ons",
-	adminBilling: "/admin/billing",
-	adminPlans: "/admin/plans",
-	adminTenants: "/admin/tenants",
 
 	// Área logada do tenant (dashboard)
 	dashboard: "/dashboard",

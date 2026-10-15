@@ -2,7 +2,7 @@
 
 Rastreabilidade entre os **49 casos `UNIT-*`** de `.doc/dashboard/estrategia-testes-dashboard.json` (25 deles P0) e os specs de `__tests__/unit/` do repo de desenvolvimento.
 
-Estratégia gerada em 2026-09-21 · mapa gerado por `npm run generate:unit-map` — não editar à mão.
+Estratégia gerada em 2026-10-15 · mapa gerado por `npm run generate:unit-map` — não editar à mão.
 
 | Convenção | Valor |
 |---|---|
@@ -119,19 +119,21 @@ Pasta sugerida: `__tests__/unit/<api|front>/dashboard/marca/`
 
 Pasta sugerida: `__tests__/unit/<api|front>/dashboard/banners/`
 
-## MN — Menu e navegação (3/3)
+## MN — Menu e navegação (2/3)
 
 | Caso | Prio | Alvo | Relação | Extrair | Teste |
 |---|---|---|---|---|---|
 | UNIT-MN-01 | P1 | tenantAppUrl() → extrair para função pura (webAppUrl, slug) · dashboard-console.tsx:1958 | E2E-MN-04 | — | `__tests__/unit/front/dashboard/menu/navegacao.test.ts:10` |
-| UNIT-MN-02 | P1 | derivação das abas de Agendamentos a partir da sessão e dos add-ons | API-MN-03 | — | `__tests__/unit/front/dashboard/menu/navegacao.test.ts:41` |
-| UNIT-MN-03 | P1 | hasModule() e showsContentGroup() · apps/dashboard/lib/navigation.ts | — · _API-PLAN-MOD_ | — | `__tests__/unit/front/dashboard/menu/modulos-do-plano.test.ts:18` |
+| UNIT-MN-02 | P1 | derivação das abas de Agendamentos a partir da sessão | API-MN-03 | — | `__tests__/unit/front/dashboard/menu/navegacao.test.ts:41` |
+| UNIT-MN-03 | P1 | hasModule() e showsContentGroup() · apps/dashboard/lib/navigation.ts | — | — | **ausente** |
 
 Pasta sugerida: `__tests__/unit/<api|front>/dashboard/menu/`
 
 ## Casos sem teste
 
-Nenhum. Todo caso unitário da estratégia tem `describe` no disco.
+**1 de 49** sem `describe`.
+
+- `UNIT-MN-03` (P1) — hasModule() e showsContentGroup() · apps/dashboard/lib/navigation.ts · sugerido em `__tests__/unit/api/dashboard/menu/`
 
 ## IDs em teste sem caso na estratégia
 
@@ -139,7 +141,7 @@ Nenhum. Todo ID declarado em `describe` existe na estratégia.
 
 ## Arquivos unitários sem ID de caso
 
-9 de 32 specs do escopo dashboard não citam caso nenhum. São testes legítimos que a estratégia não conhece — pedem um caso, não bloqueiam.
+9 de 31 specs do escopo dashboard não citam caso nenhum. São testes legítimos que a estratégia não conhece — pedem um caso, não bloqueiam.
 
 - `__tests__/unit/api/dashboard/agendamentos/escolha-do-profissional.spec.ts` (jest)
 - `__tests__/unit/api/dashboard/agendamentos/exclusao-de-servico.spec.ts` (jest)

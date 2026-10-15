@@ -1,5 +1,4 @@
 import {
-	addonsBusiness,
 	appointmentsBusiness,
 	assertTs,
 	authBusiness,
@@ -26,22 +25,7 @@ describe(describeName.dashboard, () => {
 	let personId: string
 	let packageId: string
 
-	before("Add-on Analytics ativo; pessoa nova e pacote do caso, sem nenhum lançamento financeiro", async () => {
-		const platformParams = await authBusiness.loginAsPlatformAdmin(
-			`${process.env.ADMIN_EMAIL}`,
-			`${process.env.ADMIN_PASSWORD}`,
-			packagesAG33.loginParams,
-		)
-		const tenantId = await addonsBusiness.tenantIdBySlug(
-			`${process.env.TENANT_SLUG}`,
-			platformParams,
-		)
-		await addonsBusiness.setAddOnStatus(
-			tenantId,
-			packagesAG33.addOnCode,
-			"active",
-			platformParams,
-		)
+	before("Pessoa nova e pacote do caso, sem nenhum lançamento financeiro", async () => {
 
 		adminParams = await authBusiness.loginAsTenantAdmin(
 			`${process.env.TENANT_SLUG}`,

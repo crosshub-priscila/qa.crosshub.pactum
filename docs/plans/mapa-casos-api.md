@@ -1,8 +1,8 @@
 # Mapa dos casos de API — Estratégia do Dashboard
 
-Rastreabilidade entre os **181 casos de API** de `.doc/dashboard/estrategia-testes-dashboard.json` (106 deles P0), os endpoints de `openapi.json` e os services em `core/src/services/`.
+Rastreabilidade entre os **178 casos de API** de `.doc/dashboard/estrategia-testes-dashboard.json` (105 deles P0), os endpoints de `openapi.json` e os services em `core/src/services/`.
 
-Estratégia gerada em 2026-09-21 · mapa gerado por `npm run generate:map` — não editar à mão.
+Estratégia gerada em 2026-10-15 · mapa gerado por `npm run generate:map` — não editar à mão.
 
 | Convenção | Valor |
 |---|---|
@@ -95,7 +95,7 @@ Domínio: `privacy/` · casos: 14 (P0: 11)
 
 | Caso | Prio | Cenário | Token | Status | Service (ação) | Services (arranjo) | Asserção literal | Teste | Bug |
 |---|---|---|---|---|---|---|---|---|---|
-| `API-LGPD-01` | P0 | Primeiro admin do tenant vira Principal | `platformAuth` | 201 | `postCreateAdmin` | `postCreateTenant` | — | `LGPD-01-F.test.ts` | — |
+| `API-LGPD-01` | P0 | Primeiro admin do tenant vira Principal | — | 201 | `postProvisionTenant` | — | — | `LGPD-01-F.test.ts` | — |
 | `API-LGPD-02` | P0 | Principal legado sem a flag continua autorizado | `tenantAuth` | 200 | `getSubmission` | — | — | **não verificável** — verificação manual, uma vez, na migração : o estado só existe em base legada e a API não o constrói de propósito ( API-LGPD-06 ). Decisão registrada em #98 ([#98](https://github.com/pricaimiTech/dev.CrossHub/issues/98)) | — |
 | `API-LGPD-03` | P0 | Só o Principal concede acesso | `tenantAuth` | 403 | `patchSensitiveDataAccess` | — | `Apenas o Administrador Principal pode alterar o acesso a dados sensíveis.` | `LGPD-03-F.test.ts` | — |
 | `API-LGPD-04` | P0 | Leitura sem autorização | `tenantAuth` | 403 | `getSubmission` | — | `Você não possui a permissão para visualizar respostas sensíveis.` | `LGPD-04-F.test.ts` | — |
@@ -247,7 +247,7 @@ Domínio: `dashboard/` · casos: 3 (P0: 2)
 | Caso | Prio | Cenário | Token | Status | Service (ação) | Services (arranjo) | Asserção literal | Teste | Bug |
 |---|---|---|---|---|---|---|---|---|---|
 | `API-MN-01` | P1 | Sessão | `tenantAuth` | 200 | `getSession` | `getProfessionals` | — | `MN-01-F.test.ts` | — |
-| `API-MN-02` | P0 | Token inválido, expirado e de admin desativado | `tenantAuth` | 401 | `getSession` | `patchSetAdminStatus` | — | `MN-02-F.test.ts` | — |
+| `API-MN-02` | P0 | Token inválido e expirado | `tenantAuth` | 401 | `getSession` | — | — | `MN-02-F.test.ts` | — |
 | `API-MN-03` | P0 | Menu não é segurança | `tenantAuth` | 403 | `getListAllSubmissions` | — | — | `MN-03-F.test.ts` | — |
 
 ## Anonimização (`AN`)
@@ -263,18 +263,15 @@ Domínio: `privacy/` · casos: 4 (P0: 2)
 
 ## Analytics (`ANL`)
 
-Domínio: `analytics/` · casos: 8 (P0: 4)
+Domínio: `analytics/` · casos: 5 (P0: 3)
 
 | Caso | Prio | Cenário | Token | Status | Service (ação) | Services (arranjo) | Asserção literal | Teste | Bug |
 |---|---|---|---|---|---|---|---|---|---|
-| `API-ANL-01` | P0 | Sessão declara add-ons e módulos (história AN-01) | `tenantAuth` | 200 | `getSession` | `putSaveTenantAddOns` | `analytics`<br>`active` | `ANL-01-F.test.ts` | — |
-| `API-ANL-02` | P1 | Pedido de interesse idempotente em 7 dias (história AN-02) | `tenantAuth` | 201, 200 | `postRequestAnalyticsInterest` | `getPendingAnalyticsInterest`<br>`getTenantAddOnInterests`<br>`putSaveTenantAddOns` | `pending`<br>`analytics` | `ANL-02-F.test.ts` | — |
-| `API-ANL-03` | P0 | Gate do add-on nas rotas do Analytics (história AN-03) | `tenantAuth` | 403 | `getAppointmentsAnalytics` | `getAppointmentsAnalyticsExport`<br>`getCustomersAnalytics`<br>`getCustomersAnalyticsExport`<br>`putSaveTenantAddOns` | `O add-on Analytics não está ativo para esta organização.` | `ANL-03-F.test.ts` | — |
-| `API-ANL-03b` | P0 | Ocupação de 40% (história AN-03) | `tenantAuth` | 200 | `getAppointmentsAnalytics` | `putSaveTenantAddOns`<br>`postCreateProfessional`<br>`putSaveProfessionalAvailability`<br>`postCreateService`<br>`putSetProfessionals`<br>`getAvailability`<br>`postCreatePersonRace`<br>`postCreateAppointment` | — | `ANL-03b-F.test.ts` | — |
+| `API-ANL-01` | P0 | Sessão declara os módulos da organização (história AN-01) | `tenantAuth` | 200 | `getSession` | — | — | `ANL-01-F.test.ts` | — |
+| `API-ANL-03b` | P0 | Ocupação de 40% (história AN-03) | `tenantAuth` | 200 | `getAppointmentsAnalytics` | `postCreateProfessional`<br>`putSaveProfessionalAvailability`<br>`postCreateService`<br>`putSetProfessionals`<br>`getAvailability`<br>`postCreatePersonRace`<br>`postCreateAppointment` | — | `ANL-03b-F.test.ts` | — |
 | `API-ANL-03c` | P1 | Bloqueio reduz o denominador (história AN-03) | `tenantAuth` | 200 | `getAppointmentsAnalytics` | `postCreateBlock`<br>`postCreateProfessional`<br>`putSaveProfessionalAvailability`<br>`postCreateService`<br>`postCreateAppointment` | — | `ANL-03c-F.test.ts` | — |
-| `API-ANL-04` | P1 | Período acima de 12 meses (história AN-03) | `tenantAuth` | 400 | `getAppointmentsAnalytics` | `putSaveTenantAddOns` | `Período máximo de 12 meses.` | `ANL-04-F.test.ts` | — |
-| `API-ANL-05` | P0 | Dado sensível na aba Clientes (história AN-05) | `tenantAuth` | 200 | `getCustomersAnalytics` | `putSaveTenantAddOns`<br>`patchSensitiveDataAccess`<br>`postCreatePersonRace`<br>`postCreateAppointment` | — | `ANL-05-F.test.ts` | — |
-| `API-ANL-06` | P1 | Ativar o add-on atende o pedido pendente (história AN-06) | `platformAuth` | 200 | `putSaveTenantAddOns` | `postRequestAnalyticsInterest`<br>`getTenantAddOnInterests` | `active` | `ANL-06-F.test.ts` | — |
+| `API-ANL-04` | P1 | Período acima de 12 meses (história AN-03) | `tenantAuth` | 400 | `getAppointmentsAnalytics` | — | `Período máximo de 12 meses.` | `ANL-04-F.test.ts` | — |
+| `API-ANL-05` | P0 | Dado sensível na aba Clientes (história AN-05) | `tenantAuth` | 200 | `getCustomersAnalytics` | `patchSensitiveDataAccess`<br>`postCreatePersonRace`<br>`postCreateAppointment` | — | `ANL-05-F.test.ts` | — |
 
 ## Bugs abertos pela automação
 
@@ -283,7 +280,7 @@ Nenhum bug aberto no momento.
 
 ## Casos sem teste
 
-**3 de 181** casos da estratégia não têm arquivo de teste: 0 ausente(s) e 3 não verificável(is) contra o contrato atual.
+**3 de 178** casos da estratégia não têm arquivo de teste: 0 ausente(s) e 3 não verificável(is) contra o contrato atual.
 
 ### Não verificáveis contra o contrato (3)
 
@@ -302,12 +299,14 @@ Nenhum. Todo arquivo no disco corresponde a um caso da estratégia.
 
 ## Cobertura do contrato
 
-Rotas citadas por algum caso: **101** de 149 do contrato.
+Rotas citadas por algum caso: **93** de 127 do contrato.
 
-### Rotas `/dashboard/**` sem nenhum caso de API (20 de 102)
+### Rotas `/dashboard/**` sem nenhum caso de API (22 de 101)
 
 - `DELETE /dashboard/appointments/blocks/{id}` → `appointments/deleteBlock`
 - `DELETE /dashboard/forms/{id}` → `forms/deleteForm`
+- `GET /dashboard/analytics/appointments/export` → `analytics/getAppointmentsAnalyticsExport`
+- `GET /dashboard/analytics/customers/export` → `analytics/getCustomersAnalyticsExport`
 - `GET /dashboard/appointments/blocks` → `appointments/getBlocks`
 - `GET /dashboard/appointments/packages` → `appointments/getPackages`
 - `GET /dashboard/appointments/professionals` → `appointments/getProfessionals`
