@@ -149,7 +149,6 @@ const NAME_OVERRIDES = {
 
 /** Services escritos à mão — nunca sobrescritos, nem com `--force`. */
 const PRESERVED = new Set([
-	"core/src/services/auth/postPlatformLogin.service.ts",
 	"core/src/services/auth/postTenantLogin.service.ts",
 	// Rota documentada na especificação, ausente do contrato — ver caso AG-22.
 	"core/src/services/public/postPublicRescheduleAppointment.service.ts",

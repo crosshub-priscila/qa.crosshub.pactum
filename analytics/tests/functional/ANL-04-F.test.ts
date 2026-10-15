@@ -1,5 +1,4 @@
 import {
-	addonsBusiness,
 	assertTs,
 	authBusiness,
 	describeName,
@@ -11,25 +10,7 @@ import { analyticsANL04 } from "@analytics-data/analytics.data"
 describe(describeName.dashboard, () => {
 	let adminParams: IParamsDefault
 
-	before("Tenant principal com o add-on ativo", async () => {
-		// Garantir o add-on ativo é idempotente e é o estado final esperado do
-		// tenant principal — outros casos do módulo dependem dele.
-		const platformParams = await authBusiness.loginAsPlatformAdmin(
-			`${process.env.ADMIN_EMAIL}`,
-			`${process.env.ADMIN_PASSWORD}`,
-			analyticsANL04.loginParams,
-		)
-		const tenantId = await addonsBusiness.tenantIdBySlug(
-			`${process.env.TENANT_SLUG}`,
-			platformParams,
-		)
-
-		await addonsBusiness.setAddOnStatus(
-			tenantId,
-			analyticsANL04.addOnCode,
-			"active",
-			platformParams,
-		)
+	before("Tenant principal", async () => {
 
 		adminParams = await authBusiness.loginAsTenantAdmin(
 			`${process.env.TENANT_SLUG}`,

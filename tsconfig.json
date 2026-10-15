@@ -24,10 +24,6 @@
       "@analytics-data/*": ["./analytics/data/*"],
       "@analytics-tests/*": ["./analytics/tests/*"],
 
-      "@addons/*": ["./addons/*"],
-      "@addons-data/*": ["./addons/data/*"],
-      "@addons-tests/*": ["./addons/tests/*"],
-
       "@appointments/*": ["./appointments/*"],
       "@appointments-data/*": ["./appointments/data/*"],
       "@appointments-tests/*": ["./appointments/tests/*"],
@@ -43,10 +39,6 @@
       "@banners/*": ["./banners/*"],
       "@banners-data/*": ["./banners/data/*"],
       "@banners-tests/*": ["./banners/tests/*"],
-
-      "@billing/*": ["./billing/*"],
-      "@billing-data/*": ["./billing/data/*"],
-      "@billing-tests/*": ["./billing/tests/*"],
 
       "@branding/*": ["./branding/*"],
       "@branding-data/*": ["./branding/data/*"],
@@ -72,17 +64,9 @@
       "@people-data/*": ["./people/data/*"],
       "@people-tests/*": ["./people/tests/*"],
 
-      "@plans/*": ["./plans/*"],
-      "@plans-data/*": ["./plans/data/*"],
-      "@plans-tests/*": ["./plans/tests/*"],
-
       "@privacy/*": ["./privacy/*"],
       "@privacy-data/*": ["./privacy/data/*"],
-      "@privacy-tests/*": ["./privacy/tests/*"],
-
-      "@tenants/*": ["./tenants/*"],
-      "@tenants-data/*": ["./tenants/data/*"],
-      "@tenants-tests/*": ["./tenants/tests/*"]
+      "@privacy-tests/*": ["./privacy/tests/*"]
     }
   },
   "exclude": ["node_modules", "dist"]

@@ -1,22 +1,12 @@
 import { preSetup } from "@core/constants"
-import { ANALYTICS_ADDON_CODE } from "@core/business/addons/addons.business"
 import { dateInDays, weekdayOfDate } from "@core/utils/date.utils"
 import { dateForCase } from "@shared-data/testDates.data"
 
 /** Login responde 200, como o contrato declara (#86 corrigido). */
 const loginParams = preSetup.preSetupParamsDefault(200, 5, 500)
 
-/**
- * Base dos casos do Analytics.
- *
- * O add-on é estado global do tenant (`tenant_add_ons`, uma linha por par
- * tenant–add-on): ligar e desligar em paralelo no mesmo tenant derrubaria os
- * casos vizinhos. Por isso cada caso que muda o status usa o seu próprio tenant
- * (`tenantFor(caseId)`); os que só precisam do add-on **ativo** compartilham o
- * tenant principal e o deixam ativo ao terminar.
- */
+/** Base dos casos do Analytics. */
 const analyticsDefaults = {
-	addOnCode: ANALYTICS_ADDON_CODE,
 	cleanupReason: "Limpeza da massa de automação de API.",
 	loginParams,
 	paramsDefault: preSetup.preSetupParamsDefault200(5, 500),
@@ -30,32 +20,11 @@ const analyticsDefaults = {
 		preSetup.preSetupParamsDefault(403, 5, 500, token),
 }
 
-/** `API-ANL-01` — a sessão declara os add-ons válidos e os módulos do plano. */
+/** `API-ANL-01` — a sessão declara os módulos da organização. */
 export const analyticsANL01 = {
 	...analyticsDefaults,
 	caseId: "ANL-01",
 	casePrefix: "[ANL-01]",
-}
-
-/**
- * `API-ANL-02` — pedido de interesse idempotente: o segundo pedido em 7 dias
- * reaproveita o primeiro. Ativar o add-on no `before` atende qualquer pedido
- * pendente da execução anterior, senão o primeiro POST já viria com 200.
- */
-export const analyticsANL02 = {
-	...analyticsDefaults,
-	caseId: "ANL-02",
-	casePrefix: "[ANL-02]",
-	kind: "trial" as const,
-}
-
-/** `API-ANL-03` — as quatro rotas do Analytics recusam o tenant sem o add-on. */
-export const analyticsANL03 = {
-	...analyticsDefaults,
-	caseId: "ANL-03",
-	casePrefix: "[ANL-03]",
-	period: { from: dateInDays(0), to: dateInDays(7) },
-	errorMessage: "O add-on Analytics não está ativo para esta organização.",
 }
 
 /**
@@ -124,12 +93,4 @@ export const analyticsANL05 = {
 	weekday: weekdayOfDate(dateForCase("ANL-05")),
 	startTime: "08:00",
 	endTime: "12:00",
-}
-
-/** `API-ANL-06` — liberar o add-on marca o pedido pendente como atendido. */
-export const analyticsANL06 = {
-	...analyticsDefaults,
-	caseId: "ANL-06",
-	casePrefix: "[ANL-06]",
-	kind: "contract" as const,
 }

@@ -1,10 +1,10 @@
 {
-  "gerado": "2026-09-21",
+  "gerado": "2026-10-15",
   "origem": ".doc/dashboard/estrategia-testes-dashboard.html",
   "aviso": "Artefato de build. Editar o HTML e rodar build-strategy-json.mjs.",
   "totais": {
-    "casos": 181,
-    "p0": 106,
+    "casos": 178,
+    "p0": 105,
     "porModulo": {
       "AG": 38,
       "F": 26,
@@ -17,7 +17,7 @@
       "BN": 11,
       "MN": 3,
       "AN": 4,
-      "ANL": 8
+      "ANL": 5
     },
     "unit": {
       "casos": 49,
@@ -38,9 +38,9 @@
     }
   },
   "conferencia": {
-    "contrato": 149,
-    "comCaso": 101,
-    "semCaso": 48
+    "contrato": 127,
+    "comCaso": 93,
+    "semCaso": 34
   },
   "casos": [
     {
@@ -2301,19 +2301,14 @@
         {
           "papel": "acao",
           "metodo": "POST",
-          "caminho": "/admin/tenants/{id}/admins"
-        },
-        {
-          "papel": "arranjo",
-          "metodo": "POST",
-          "caminho": "/admin/tenants"
+          "caminho": "/dashboard/test-fixtures/tenant"
         }
       ],
-      "token": "platformAuth",
+      "token": null,
       "status": [
         201
       ],
-      "precondicao": "Tenant recém-criado, sem nenhum administrador",
+      "precondicao": "Organização provisionada pela fixture de teste, com o administrador principal que ela cria",
       "assercao": "isPrimaryAdmin: true e canViewSensitiveData: true no primeiro tenant_admin . O segundo nasce com ambos false",
       "literais": [],
       "campos": [
@@ -5637,30 +5632,25 @@
       "moduloNome": "Menu e navegação",
       "camada": "API",
       "prioridade": "P0",
-      "cenario": "Token inválido, expirado e de admin desativado",
+      "cenario": "Token inválido e expirado",
       "naoVerificavel": null,
       "rotas": [
         {
           "papel": "acao",
           "metodo": "GET",
           "caminho": "/dashboard/session"
-        },
-        {
-          "papel": "arranjo",
-          "metodo": "PATCH",
-          "caminho": "/admin/tenants/{id}/admins/{userId}/status"
         }
       ],
       "token": "tenantAuth",
       "status": [
         401
       ],
-      "precondicao": "Três variações: token adulterado, token expirado e token de admin com isActive: false",
-      "assercao": "401 nas três. A terceira prova que isActive é reconferido a cada requisição, não só no login",
+      "precondicao": "Duas variações: token adulterado e token expirado",
+      "assercao": "401 nas duas. A terceira variação — token de admin com isActive: false — saiu com as rotas de gestão de administrador do Super Admin (ADR-002) e volta quando houver como desativar um admin",
       "literais": [],
       "campos": [
         "401",
-        "isActive"
+        "isActive: false"
       ],
       "doc": null,
       "novo": false
@@ -5838,144 +5828,25 @@
       "moduloNome": "Analytics",
       "camada": "API",
       "prioridade": "P0",
-      "cenario": "Sessão declara add-ons e módulos (história AN-01)",
+      "cenario": "Sessão declara os módulos da organização (história AN-01)",
       "naoVerificavel": null,
       "rotas": [
         {
           "papel": "acao",
           "metodo": "GET",
           "caminho": "/dashboard/session"
-        },
-        {
-          "papel": "arranjo",
-          "metodo": "PUT",
-          "caminho": "/admin/add-ons/tenants/{tenantId}"
         }
       ],
       "token": "tenantAuth",
       "status": [
         200
       ],
-      "precondicao": "Tenant próprio; add-on analytics desligado e depois ligado",
-      "assercao": "Sem o add-on, addons não contém analytics e enabledModules é lista; com ele, addons traz code: \"analytics\" , status: \"active\" e endsAt nulo; enabledModules não muda",
-      "literais": [
-        "analytics",
-        "active"
-      ],
+      "precondicao": "Tenant próprio, com os módulos da organização habilitados",
+      "assercao": "enabledModules é lista e traz os módulos da organização; o payload não tem addons — o campo saiu com o fim dos add-ons (ADR-002), e o Analytics responde sem depender de vínculo nenhum",
+      "literais": [],
       "campos": [
-        "addons",
-        "analytics",
         "enabledModules",
-        "code: \"analytics\"",
-        "status: \"active\"",
-        "endsAt"
-      ],
-      "doc": null,
-      "novo": false
-    },
-    {
-      "id": "API-ANL-02",
-      "modulo": "ANL",
-      "moduloNome": "Analytics",
-      "camada": "API",
-      "prioridade": "P1",
-      "cenario": "Pedido de interesse idempotente em 7 dias (história AN-02)",
-      "naoVerificavel": null,
-      "rotas": [
-        {
-          "papel": "acao",
-          "metodo": "POST",
-          "caminho": "/dashboard/analytics/interest"
-        },
-        {
-          "papel": "arranjo",
-          "metodo": "GET",
-          "caminho": "/dashboard/analytics/interest"
-        },
-        {
-          "papel": "arranjo",
-          "metodo": "GET",
-          "caminho": "/admin/add-ons/tenants/{tenantId}/interests"
-        },
-        {
-          "papel": "arranjo",
-          "metodo": "PUT",
-          "caminho": "/admin/add-ons/tenants/{tenantId}"
-        }
-      ],
-      "token": "tenantAuth",
-      "status": [
-        201,
-        200
-      ],
-      "precondicao": "Tenant próprio sem o add-on e sem pedido pendente (ativar e desativar no arranjo atende o pedido anterior)",
-      "assercao": "Primeiro POST 201 com reused: false e status: \"pending\" ; segundo POST 200 com o mesmo id e reused: true ; GET devolve pending.id igual e addon.code: \"analytics\" ; o admin da plataforma lista o pedido com kind e requestedByEmail",
-      "literais": [
-        "pending",
-        "analytics"
-      ],
-      "campos": [
-        "201",
-        "reused: false",
-        "status: \"pending\"",
-        "200",
-        "id",
-        "reused: true",
-        "GET",
-        "pending.id",
-        "addon.code: \"analytics\"",
-        "kind",
-        "requestedByEmail"
-      ],
-      "doc": null,
-      "novo": false
-    },
-    {
-      "id": "API-ANL-03",
-      "modulo": "ANL",
-      "moduloNome": "Analytics",
-      "camada": "API",
-      "prioridade": "P0",
-      "cenario": "Gate do add-on nas rotas do Analytics (história AN-03)",
-      "naoVerificavel": null,
-      "rotas": [
-        {
-          "papel": "acao",
-          "metodo": "GET",
-          "caminho": "/dashboard/analytics/appointments"
-        },
-        {
-          "papel": "arranjo",
-          "metodo": "GET",
-          "caminho": "/dashboard/analytics/appointments/export"
-        },
-        {
-          "papel": "arranjo",
-          "metodo": "GET",
-          "caminho": "/dashboard/analytics/customers"
-        },
-        {
-          "papel": "arranjo",
-          "metodo": "GET",
-          "caminho": "/dashboard/analytics/customers/export"
-        },
-        {
-          "papel": "arranjo",
-          "metodo": "PUT",
-          "caminho": "/admin/add-ons/tenants/{tenantId}"
-        }
-      ],
-      "token": "tenantAuth",
-      "status": [
-        403
-      ],
-      "precondicao": "Tenant próprio com o add-on inactive",
-      "assercao": "As quatro rotas respondem 403 com \"O add-on Analytics não está ativo para esta organização.\"",
-      "literais": [
-        "O add-on Analytics não está ativo para esta organização."
-      ],
-      "campos": [
-        "403"
+        "addons"
       ],
       "doc": null,
       "novo": false
@@ -5993,11 +5864,6 @@
           "papel": "acao",
           "metodo": "GET",
           "caminho": "/dashboard/analytics/appointments"
-        },
-        {
-          "papel": "arranjo",
-          "metodo": "PUT",
-          "caminho": "/admin/add-ons/tenants/{tenantId}"
         },
         {
           "papel": "arranjo",
@@ -6039,7 +5905,7 @@
       "status": [
         200
       ],
-      "precondicao": "Tenant próprio com o add-on ativo; profissional novo com 10 h de agenda no dia reservado; 4 atendimentos aprovados de 60 min para 4 clientes (cota de um por dia)",
+      "precondicao": "Tenant próprio; profissional novo com 10 h de agenda no dia reservado; 4 atendimentos aprovados de 60 min para 4 clientes (cota de um por dia)",
       "assercao": "Na entrada do profissional em professionals : hasAvailability: true , availableMinutes: 600 , scheduledMinutes: 240 , occupancyPercent: 40 ; period.from ecoa a data consultada",
       "literais": [],
       "campos": [
@@ -6121,18 +5987,13 @@
           "papel": "acao",
           "metodo": "GET",
           "caminho": "/dashboard/analytics/appointments"
-        },
-        {
-          "papel": "arranjo",
-          "metodo": "PUT",
-          "caminho": "/admin/add-ons/tenants/{tenantId}"
         }
       ],
       "token": "tenantAuth",
       "status": [
         400
       ],
-      "precondicao": "Tenant principal com o add-on ativo; from hoje e to a 400 dias",
+      "precondicao": "Tenant principal; from hoje e to a 400 dias",
       "assercao": "\"Período máximo de 12 meses.\"",
       "literais": [
         "Período máximo de 12 meses."
@@ -6157,11 +6018,6 @@
         },
         {
           "papel": "arranjo",
-          "metodo": "PUT",
-          "caminho": "/admin/add-ons/tenants/{tenantId}"
-        },
-        {
-          "papel": "arranjo",
           "metodo": "PATCH",
           "caminho": "/dashboard/privacy/professionals/{userId}/sensitive-data-access"
         },
@@ -6180,7 +6036,7 @@
       "status": [
         200
       ],
-      "precondicao": "Tenant principal com o add-on ativo; um atendimento no dia reservado ao caso; admin do pool sem canViewSensitiveData",
+      "precondicao": "Tenant principal; um atendimento no dia reservado ao caso; admin do pool sem canViewSensitiveData",
       "assercao": "Para o admin restrito, a cliente aparece em topSpenders com email e phone nulos ; para o principal, com o e-mail cadastrado; cards.activeCustomers é igual para os dois",
       "literais": [],
       "campos": [
@@ -6188,47 +6044,6 @@
         "email",
         "phone",
         "cards.activeCustomers"
-      ],
-      "doc": null,
-      "novo": false
-    },
-    {
-      "id": "API-ANL-06",
-      "modulo": "ANL",
-      "moduloNome": "Analytics",
-      "camada": "API",
-      "prioridade": "P1",
-      "cenario": "Ativar o add-on atende o pedido pendente (história AN-06)",
-      "naoVerificavel": null,
-      "rotas": [
-        {
-          "papel": "acao",
-          "metodo": "PUT",
-          "caminho": "/admin/add-ons/tenants/{tenantId}"
-        },
-        {
-          "papel": "arranjo",
-          "metodo": "POST",
-          "caminho": "/dashboard/analytics/interest"
-        },
-        {
-          "papel": "arranjo",
-          "metodo": "GET",
-          "caminho": "/admin/add-ons/tenants/{tenantId}/interests"
-        }
-      ],
-      "token": "platformAuth",
-      "status": [
-        200
-      ],
-      "precondicao": "Tenant próprio sem o add-on; um pedido de interesse recém-criado",
-      "assercao": "Antes do PUT o pedido está na lista do admin; após status: \"active\" , a lista de pendentes é []",
-      "literais": [
-        "active"
-      ],
-      "campos": [
-        "status: \"active\"",
-        "[]"
       ],
       "doc": null,
       "novo": false
@@ -7820,13 +7635,13 @@
       "moduloNome": "Menu e navegação",
       "camada": "UNIT",
       "prioridade": "P1",
-      "alvo": "derivação das abas de Agendamentos a partir da sessão e dos add-ons",
+      "alvo": "derivação das abas de Agendamentos a partir da sessão",
       "fontes": [],
       "funcoes": [],
       "codigos": [],
       "superficie": null,
       "extrair": false,
-      "prova": "As abas de Agendamentos não dependem de add-on nem de canViewSensitiveData : a lista é a mesma para qualquer tenant_admin do tenant que contratou o módulo. O que esconde item de menu é o módulo do plano, e isso é o UNIT-MN-03 . O ADR-004 continua valendo nos dois casos: \"visibilidade de interface não é controle de segurança e não impede chamadas diretas às rotas\" — a fronteira é a API, que responde 403 a quem não contratou.",
+      "prova": "As abas de Agendamentos não dependem de canViewSensitiveData : a lista é a mesma para qualquer tenant_admin da organização que tem o módulo habilitado. O que esconde item de menu é o módulo em enabledModules , e isso é o UNIT-MN-03 . O ADR-004 continua valendo nos dois casos: \"visibilidade de interface não é controle de segurança e não impede chamadas diretas às rotas\" — a fronteira é a API, que responde 403 a quem não tem o módulo.",
       "literais": [
         "item de menu",
         "visibilidade de interface não é controle de segurança e não impede chamadas diretas às rotas"
@@ -7834,6 +7649,7 @@
       "campos": [
         "canViewSensitiveData",
         "tenant_admin",
+        "enabledModules",
         "403"
       ],
       "relacao": [
@@ -7859,14 +7675,15 @@
       ],
       "superficie": null,
       "extrair": false,
-      "prova": "O item só aparece se o módulo está em enabledModules da sessão: o plano Beta (marca, banners, clientes, códigos e agenda) mostra Agendamentos e Clientes e esconde Catálogo, Formulários, Grupos, Pacotes e Privacidade. Lista ausente mostra tudo — um contrato antigo, sem o campo, não pode apagar o menu inteiro; lista presente vale , inclusive vazia. O grupo CONTEÚDO some quando nenhum item dele sobra. Segurança segue na API (403 do RequiresModuleGuard ), ver ADR-002 dos Planos.",
+      "prova": "O item só aparece se o módulo está em enabledModules da sessão. Depois do ADR-002 essa lista é configuração fixa da organização , não consequência de plano contratado — o RequiresModuleGuard continua sendo a fronteira. Lista ausente mostra tudo — um contrato antigo, sem o campo, não pode apagar o menu inteiro; lista presente vale , inclusive vazia. O grupo CONTEÚDO some quando nenhum item dele sobra. Segurança segue na API ( 403 ).",
       "literais": [],
       "campos": [
         "enabledModules",
-        "RequiresModuleGuard"
+        "RequiresModuleGuard",
+        "403"
       ],
       "relacao": [],
-      "relacaoNota": "API-PLAN-MOD",
+      "relacaoNota": null,
       "naoVerificavel": null
     }
   ]

@@ -14,3 +14,30 @@ export interface IBackdateResult {
 	id: string
 	at: string
 }
+
+export interface IProvisionTenant {
+	name: string
+	slug: string
+	adminEmail: string
+	adminPassword: string
+	enabledModules?: Array<
+		| "branding"
+		| "banners"
+		| "people"
+		| "access_codes"
+		| "appointments"
+		| "appointment_packages"
+		| "shop"
+		| "forms"
+		| "groups"
+		| "privacy"
+	>
+}
+
+export interface IProvisionTenantResult {
+	tenantId: string
+	slug: string
+	adminUserId: string
+	enabledModules: string[]
+	created: boolean
+}
