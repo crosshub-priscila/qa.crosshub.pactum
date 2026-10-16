@@ -1,8 +1,8 @@
 # Mapa dos casos unitários
 
-Rastreabilidade entre os **49 casos `UNIT-*`** de `.doc/dashboard/estrategia-testes-dashboard.json` (25 deles P0) e os specs de `__tests__/unit/` do repo de desenvolvimento.
+Rastreabilidade entre os **48 casos `UNIT-*`** de `.doc/dashboard/estrategia-testes-dashboard.json` (25 deles P0) e os specs de `__tests__/unit/` do repo de desenvolvimento.
 
-Estratégia gerada em 2026-10-15 · mapa gerado por `npm run generate:unit-map` — não editar à mão.
+Estratégia gerada em 2026-10-16 · mapa gerado por `npm run generate:unit-map` — não editar à mão.
 
 | Convenção | Valor |
 |---|---|
@@ -119,21 +119,18 @@ Pasta sugerida: `__tests__/unit/<api|front>/dashboard/marca/`
 
 Pasta sugerida: `__tests__/unit/<api|front>/dashboard/banners/`
 
-## MN — Menu e navegação (2/3)
+## MN — Menu e navegação (2/2)
 
 | Caso | Prio | Alvo | Relação | Extrair | Teste |
 |---|---|---|---|---|---|
-| UNIT-MN-01 | P1 | tenantAppUrl() → extrair para função pura (webAppUrl, slug) · dashboard-console.tsx:1958 | E2E-MN-04 | — | `__tests__/unit/front/dashboard/menu/navegacao.test.ts:10` |
-| UNIT-MN-02 | P1 | derivação das abas de Agendamentos a partir da sessão | API-MN-03 | — | `__tests__/unit/front/dashboard/menu/navegacao.test.ts:41` |
-| UNIT-MN-03 | P1 | hasModule() e showsContentGroup() · apps/dashboard/lib/navigation.ts | — | — | **ausente** |
+| UNIT-MN-01 | P1 | tenantAppUrl(webAppUrl) · apps/dashboard/lib/tenant-app-url.ts | E2E-MN-04 | — | `__tests__/unit/front/dashboard/menu/navegacao.test.ts:10` |
+| UNIT-MN-02 | P1 | appointmentsTabs() · analyticsTabs() · navigation.ts | API-MN-03 | — | `__tests__/unit/front/dashboard/menu/navegacao.test.ts:24` |
 
 Pasta sugerida: `__tests__/unit/<api|front>/dashboard/menu/`
 
 ## Casos sem teste
 
-**1 de 49** sem `describe`.
-
-- `UNIT-MN-03` (P1) — hasModule() e showsContentGroup() · apps/dashboard/lib/navigation.ts · sugerido em `__tests__/unit/api/dashboard/menu/`
+Nenhum. Todo caso unitário da estratégia tem `describe` no disco.
 
 ## IDs em teste sem caso na estratégia
 

@@ -130,6 +130,43 @@ code{font-family:"IBM Plex Mono",monospace;font-size:.86em;background:var(--surf
 a{color:var(--accent)}
 footer{border-top:1px solid var(--rule);padding-top:20px;color:var(--ink-3);font-size:.88rem;display:flex;flex-direction:column;gap:6px}
 
+/* navegação por abas — sticky logo abaixo do header (no meio do doc o sticky “solta” perto do rodapé) */
+.report-nav{
+  position:sticky;top:0;z-index:100;
+  background:var(--ground);
+  border:1px solid var(--rule);border-radius:2px;
+  padding:10px 14px 12px;
+  box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:10px;
+  margin-bottom:4px;
+}
+.report-nav-inner{display:flex;flex-direction:column;gap:10px}
+.report-nav-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.report-nav-row.meta{gap:8px}
+.report-nav-label{
+  font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-3);padding:0 4px 0 2px;white-space:nowrap;
+}
+.report-nav-spacer{flex:1 1 12px;min-width:8px}
+.report-nav button{
+  font-family:Archivo,system-ui,sans-serif;font-size:12.5px;font-weight:600;
+  padding:6px 11px;border:1px solid var(--rule);border-radius:2px;
+  background:var(--surface);color:var(--ink-2);cursor:pointer;
+  white-space:nowrap;line-height:1.25;
+}
+.report-nav button:hover{border-color:var(--accent);color:var(--accent)}
+.report-nav button[aria-current="page"]{
+  background:var(--accent-soft);border-color:var(--accent);color:var(--accent);
+}
+.report-nav button.mod{font-size:12px;padding:5px 9px}
+.report-nav-modules{
+  padding-top:8px;border-top:1px solid var(--rule);
+}
+.report-pane[hidden]{display:none!important}
+section.report-pane,h2{scroll-margin-top:calc(var(--report-nav-h, 96px) + 16px)}
+.report-tab-body{min-height:calc(100vh - var(--report-nav-h, 96px) - 48px);overflow-anchor:none}
+html{overflow-anchor:none}
+
 @media (max-width:640px){
   .modmeta{grid-template-columns:1fr;gap:2px 0}
   .modmeta dd{margin-bottom:8px}
@@ -142,7 +179,9 @@ footer{border-top:1px solid var(--rule);padding-top:20px;color:var(--ink-3);font
   .module{break-inside:avoid-page;box-shadow:none}
   table{min-width:0;font-size:8.6pt}
   th,td{padding:5px 7px}
-  nav.toc{break-after:page}
+  .report-nav{position:static}
+  .report-tab-body{min-height:0}
+  .report-pane[hidden]{display:flex!important}
   header.top{padding-top:0}
 }
 </style>
@@ -152,90 +191,259 @@ footer{border-top:1px solid var(--rule);padding-top:20px;color:var(--ink-3);font
 <header class="top">
   <p class="eyebrow">Estratégia de testes · Dashboard do tenant</p>
   <h1>Estratégia de Testes do Dashboard</h1>
-  <p class="lede">Análise de risco e plano de cobertura para os onze módulos do console do tenant (<code>apps/dashboard</code> + rotas <code>/dashboard/**</code> da API), construída sobre as especificações PRD/ADR de <code>docs/dash/</code>. Aplica <b>SFDPOT</b> para descobrir o que testar e <b>RCRCRC</b> para decidir em que ordem, e entrega, por módulo, cenários priorizados de API e de E2E prontos para virar backlog de automação.</p>
+  <p class="lede">Plano de cobertura do Dashboard Libre (<code>apps/dashboard</code> + <code>/dashboard/**</code> e <code>/public/**</code>). <b>Status de execução:</b> <a href="#status-execucao">Pronto · Resolver · Bloqueado</a>. Especificação de casos por módulo abaixo; método SFDPOT/RCRCRC no <a href="#apendice">apêndice</a>. Pivot <b>ADR-002</b>: <a href="#pivot-libre">impacto na automação</a>.</p>
   <dl class="meta">
-    <div><dt>Escopo</dt><dd>Dashboard (console do tenant)</dd></div>
-    <div><dt>Base</dt><dd>feat/fase-2-codemod-cor-dashboard @ 6a943fb</dd></div>
-    <div><dt>Fonte</dt><dd>docs/dash/ · 13 arquivos</dd></div>
-    <div><dt>Data</dt><dd>29/08/2026</dd></div>
+    <div><dt>Escopo</dt><dd>Dashboard + API tenant · App via <code>/public/**</code></dd></div>
+    <div><dt>Base</dt><dd>staging @ 8257a19</dd></div>
+    <div><dt>Fonte</dt><dd>docs/dash/ · ADR-002 · <code>docs/plans/pivot-libre-impacto-testes.md</code></dd></div>
+    <div><dt>Data</dt><dd>15/10/2026</dd></div>
     <div><dt>Autoria</dt><dd>Priscila Caimi</dd></div>
     <div><dt>Método</dt><dd>SFDPOT + RCRCRC (Bach)</dd></div>
   </dl>
 </header>
 
+<nav class="report-nav" aria-label="Abas do relatório" id="report-nav">
+  <div class="report-nav-inner">
+  <div class="report-nav-row meta">
+    <span class="report-nav-label">Relatório</span>
+    <button type="button" class="tab-btn" data-tab="inicio">Início</button>
+    <button type="button" class="tab-btn" data-tab="contexto">Contexto</button>
+    <span class="report-nav-spacer"></span>
+    <button type="button" class="tab-btn" data-tab="fechamento">Fechamento</button>
+    <button type="button" class="tab-btn" data-tab="apendice">Apêndice</button>
+  </div>
+  <div class="report-nav-row report-nav-modules">
+    <span class="report-nav-label">Módulos</span>
+    <button type="button" class="tab-btn mod" data-tab="m-agendamentos">Agendamentos</button>
+    <button type="button" class="tab-btn mod" data-tab="m-formularios">Formulários</button>
+    <button type="button" class="tab-btn mod" data-tab="m-lgpd">LGPD</button>
+    <button type="button" class="tab-btn mod" data-tab="m-clientes">Clientes</button>
+    <button type="button" class="tab-btn mod" data-tab="m-home">Home</button>
+    <button type="button" class="tab-btn mod" data-tab="m-grupos">Grupos</button>
+    <button type="button" class="tab-btn mod" data-tab="m-catalogo">Catálogo</button>
+    <button type="button" class="tab-btn mod" data-tab="m-marca">Marca</button>
+    <button type="button" class="tab-btn mod" data-tab="m-banners">Banners</button>
+    <button type="button" class="tab-btn mod" data-tab="m-menu">Menu</button>
+    <button type="button" class="tab-btn mod" data-tab="m-anonimizacao">Anonimização</button>
+    <button type="button" class="tab-btn mod" data-tab="m-analytics">Analytics</button>
+  </div>
+  </div>
+</nav>
+
 <section>
   <h2 id="panorama">Panorama</h2>
   <div class="scoreboard">
     <div class="score"><b>11</b><span>módulos</span></div>
-    <div class="score"><b>80</b><span>endpoints /dashboard</span></div>
-    <div class="score ok"><b>46</b><span>unitários prontos</span></div>
-    <div class="score ok"><b>46</b><span>casos unitários</span></div>
-    <div class="score ok"><b>166</b><span>casos de API</span></div>
-    <div class="score ok"><b>31</b><span>jornadas E2E</span></div>
-    <div class="score bad"><b>138</b><span>casos P0</span></div>
+    <div class="score ok"><b>48/48</b><span>UNIT-* no monorepo</span></div>
+    <div class="score ok"><b>178</b><span>casos de API</span></div>
+    <div class="score warn"><b>174/178</b><span>specs Pactum</span></div>
+    <div class="score"><b>31</b><span>jornadas E2E</span></div>
+    <div class="score bad"><b>0</b><span>E2E Playwright</span></div>
+    <div class="score bad"><b>105</b><span>P0 de API</span></div>
   </div>
   <div class="verdict">
-    <strong>O Dashboard é a maior superfície do produto e a única sem nenhuma cobertura automatizada.</strong>
-    <p>São onze módulos, oitenta endpoints sob <code>/dashboard/**</code> e um front concentrado em <code>apps/dashboard/app/dashboard-console.tsx</code> — <b>2.950 linhas só no arquivo raiz</b>, mais ~23.400 linhas somando todos os painéis de <code>app/</code>. O <code>package.json</code> do app traz apenas o placeholder <code>"test": "node --test"</code>, e nenhuma das sete specs de <code>apps/api/test/</code> toca uma rota de tenant: elas cobrem <code>admin/*</code>, RLS e autenticação.</p>
-    <p>Ao mesmo tempo, a branch atual acabou de <b>extrair quatro painéis</b> de dentro do console (home, privacy, branding, shop) e reestilizá-los com a biblioteca — a maior movimentação de código do dashboard em toda a história do repositório, feita sem rede de proteção. Este documento parte daí: prioriza o que está quente, ancora cada caso em uma regra literal da documentação do módulo e diz explicitamente o que <i>não</i> dá para testar hoje.</p>
+    <strong>Comece por <a href="#status-execucao">Pronto · Resolver · Bloqueado</a>.</strong> O restante deste HTML é especificação de casos e contexto de risco — o status de execução é conferido no disco e regerado em <code>docs/plans/mapa-casos-api.md</code> (<code>npm run generate:map</code>).
+    <p>Unitário e contrato HTTP (Pactum) estão praticamente fechados; faltam camada de componente, Playwright no monorepo e a limpeza pós-<b>ADR-002</b> descrita em <a href="#pivot-libre">Pivot Libre</a>.</p>
   </div>
 </section>
 
 <section>
-  <h2 id="como-ler">Como ler este documento</h2>
-  <p class="note">Duas heurísticas de James Bach, usadas para responder perguntas diferentes. Elas não competem — a primeira gera a lista, a segunda ordena a lista.</p>
+  <h2 id="status-execucao">Pronto · Resolver · Bloqueado</h2>
+  <p class="note">Foto de 15/10/2026. Detalhe por caso: carimbos <code>npm run stamp:strategy</code> nas tabelas abaixo e mapas em <code>docs/plans/</code>.</p>
+
+  <h3>Pronto</h3>
   <div class="tablewrap">
   <table>
-    <thead><tr><th>Heurística</th><th>Pergunta que responde</th><th>Dimensões</th><th>Onde aparece aqui</th></tr></thead>
+    <thead><tr><th>Entrega</th><th>Estado</th><th>Onde conferir</th></tr></thead>
     <tbody>
-      <tr>
-        <td class="dim">SFDPOT</td>
-        <td><b>O que testar?</b> Varre o produto por ângulos independentes para que nenhuma classe de risco passe despercebida.</td>
-        <td><i>Structure</i> (estrutura) · <i>Function</i> (função) · <i>Data</i> (dados) · <i>Platform</i> (plataforma) · <i>Operations</i> (operação) · <i>Time</i> (tempo)</td>
-        <td>Uma tabela de seis linhas por módulo</td>
-      </tr>
-      <tr>
-        <td class="dim">RCRCRC</td>
-        <td><b>Em que ordem testar?</b> Prioriza regressão quando não há tempo nem cobertura para rodar tudo.</td>
-        <td><i>Recent</i> (recente) · <i>Core</i> (essencial) · <i>Risky</i> (arriscado) · <i>Configuration-sensitive</i> (sensível a configuração) · <i>Conformance</i> (conformidade) · <i>Complex</i> (complexo)</td>
-        <td>Uma tabela global e uma por módulo</td>
-      </tr>
+      <tr><td class="dim">48 casos <code>UNIT-*</code></td><td><span class="pill pass">implementado</span></td><td><code>docs/plans/mapa-casos-unit.md</code> · <code>dev.CrossHub/__tests__/unit/</code></td></tr>
+      <tr><td class="dim">178 casos <code>API-*</code> na estratégia</td><td><span class="pill pass">especificado</span></td><td>Tabelas por módulo · <code>estrategia-testes-dashboard.json</code></td></tr>
+      <tr><td class="dim">Casamento caso → rota → service</td><td><span class="pill pass">via JSON</span></td><td><code>npm run generate:map</code> · 137 services em <code>core/src/services/</code></td></tr>
+      <tr><td class="dim">Specs Pactum funcionais</td><td><span class="pill pass">174 arquivos</span></td><td><code>*/tests/functional/*-F.test.ts</code></td></tr>
+      <tr><td class="dim">Integração API no monorepo</td><td><span class="pill pass">CI</span></td><td><code>dev.CrossHub/__tests__/integration/</code></td></tr>
+      <tr><td class="dim">Bugs abertos pela automação</td><td><span class="pill pass">nenhum</span></td><td><code>mapa-casos-api.md</code> → Bugs abertos</td></tr>
     </tbody>
   </table>
   </div>
-  <div class="callout plain">
-    <h4>Convenções</h4>
-    <ul>
-      <li><b>Prioridade.</b> <span class="pill fail">P0</span> bloqueia o release — regra de negócio, dinheiro, permissão ou isolamento de tenant. <span class="pill warn">P1</span> degrada a operação sem impedi-la. <span class="pill info">P2</span> é polimento e conveniência.</li>
-      <li><b>Camada.</b> Cada caso carrega a etiqueta da camada em que deve ser implementado. <span class="pill unit">UNIT</span> é teste de método — função pura, sem banco e sem HTTP, escrito junto do código que ele prova. <span class="pill api">API</span> é teste funcional no endpoint, com banco real e token de verdade. <span class="pill e2e">E2E</span> é o que será automatizado pela interface, atravessando Dashboard, API e app do cliente. A etiqueta não é sugestão: um caso etiquetado UNIT que só existe como teste de API custa segundos a mais por execução e não aponta a linha que quebrou.</li>
-      <li><b>IDs.</b> <code>UNIT-&lt;MOD&gt;-nn</code> para teste de método, <code>API-&lt;MOD&gt;-nn</code> para contrato de API e <code>E2E-&lt;MOD&gt;-nn</code> para jornada de ponta a ponta. A coluna <b>Relação</b> das tabelas unitárias aponta o caso de API que aquele teste de método sustenta — os dois não se substituem: o unitário prova a aritmética, o de API prova que ela chegou na resposta. A coluna <b>Doc</b> rastreia o ID de QA que já existe na especificação do módulo (<code>AG-15</code>, <code>F-14</code>, <code>C-11</code>…), para que este documento não crie uma numeração paralela.</li>
-      <li><b>Rastreabilidade.</b> Todo caso P0 nasce de uma regra escrita em <code>docs/dash/</code>. Quando o caso é novo — descoberto pela heurística e não previsto na doc — ele aparece marcado <span class="pill info">novo</span>.</li>
-      <li><b>Rota.</b> O caminho literal do contrato OpenAPI, com os <i>path params</i> entre chaves: <code>POST /dashboard/appointments/{id}/reschedule</code>. Nunca abreviado com <code>.../</code> nem com <code>:id</code> — é por esta string que a automação casa o caso com o endpoint, e abreviar quebra o casamento. Quando o caso precisa de arranjo, as rotas de preparação aparecem em <b>cinza abaixo da rota sob teste</b>: só a de cima é o alvo da asserção. Todas foram conferidas contra o <code>docs-json</code>; nos casos <code>API-AN-01</code> e <code>-02</code> a conferência é invertida, porque o ponto deles é a rota <b>não</b> existir.</li>
-      <li><b>Token.</b> Qual login usar no <code>before</code>, lido do <code>security</code> da própria rota: <span class="pill tenant">tenantAuth</span> é o administrador da organização, <span class="pill enduser">endUserAuth</span> é o usuário final do app e <span class="pill aberta">aberta</span> é rota sem autenticação — o <code>platformAuth</code> do Super Admin saiu com o ADR-002. Onde a mesma regra vale diferente para os dois perfis — o prazo de cancelamento em <code>API-AG-19</code> e <code>-20</code>, por exemplo — os casos estão separados, um por audiência.</li>
-      <li><b>Status.</b> O código HTTP esperado, para ir direto em <code>paramsDefault.statusCode</code> sem inferir do texto. <code>201 / 409</code> significa que o caso dispara duas requisições e espera um de cada. Todo código listado foi conferido contra os que a rota declara no contrato.</li>
-      <li><b>Asserção.</b> A mensagem ou o campo que <i>prova</i> o caso — <i>"Horário indisponível."</i>, <code>occupied == capacity</code>, <code>rescheduled_from_id != null</code>. Onde antes se lia "400 com o campo inválido identificado", agora está escrito qual campo e qual mensagem.</li>
-    </ul>
+
+  <h3>Resolver (ação do time)</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Item</th><th>Prio</th><th>Próximo passo</th></tr></thead>
+    <tbody>
+      <tr><td class="dim"><code>API-AG-30</code> — rota legada <code>GET /dashboard/appointments/analytics</code></td><td><span class="pill info">P2</span></td><td>Criar <code>appointments/tests/functional/AG-30-F.test.ts</code> (assertar <code>404</code>). <b>Único caso API sem arquivo.</b></td></tr>
+      <tr><td class="dim">Playwright no monorepo</td><td><span class="pill fail">P0</span></td><td><code>playwright.config.ts</code> + <code>__tests__/e2e/</code> — smokes <code>E2E-MN-01</code>, <code>E2E-AG-01</code></td></tr>
+      <tr><td class="dim">Testes de componente</td><td><span class="pill fail">P0</span></td><td><code>__tests__/component/dashboard/</code> (Vitest + RTL + MSW) nos painéis extraídos</td></tr>
+      <tr><td class="dim">Pivot Libre — limpeza</td><td><span class="pill fail">P0</span></td><td>Tenants <code>ANL-*</code> obsoletos · <code>openapi.json</code> de <code>staging</code> · geradores sem <code>/admin/*</code> — ver <a href="#pivot-libre">§1b</a></td></tr>
+      <tr><td class="dim">Pré-requisitos de teste (relógio, dois admins)</td><td><span class="pill fail">P0</span></td><td>Seção <a href="#situacao">1.3</a> — fake timers / fábrica Principal + admin comum</td></tr>
+      <tr><td class="dim">22 rotas <code>/dashboard/**</code> sem caso dedicado</td><td><span class="pill warn">P2</span></td><td>Priorizar pagamentos e reembolsos de agenda — lista em <a href="#cobertura">§12</a> e <code>mapa-casos-api.md</code></td></tr>
+      <tr><td class="dim">Pasta <code>audit/</code> vazia</td><td><span class="pill warn">P1</span></td><td>Manter até #98 ou remover scripts órfãos — <code>docs/plans/pedido-ajuste-estrategia.md</code></td></tr>
+    </tbody>
+  </table>
   </div>
+
+  <h3>Bloqueado (não vira spec automatizado agora)</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Caso</th><th>Prio</th><th>Motivo</th></tr></thead>
+    <tbody>
+      <tr><td class="id">API-LGPD-02<span class="auto"><span class="pill warn">não verificável</span></span></td><td><span class="pill fail">P0</span></td><td>Estado legado só na migração — verificação manual ([#98](https://github.com/pricaimiTech/dev.CrossHub/issues/98))</td></tr>
+      <tr><td class="id">API-AN-04<span class="auto"><span class="pill warn">não verificável</span></span></td><td><span class="pill info">P2</span></td><td>Sem leitura de trilha de auditoria no contrato ([#98](https://github.com/pricaimiTech/dev.CrossHub/issues/98))</td></tr>
+      <tr><td class="id">API-CAT-15<span class="auto"><span class="pill warn">não verificável</span></span></td><td><span class="pill info">P2</span></td><td>Exige processo sem <code>EMAIL_FROM</code> ([#123](https://github.com/pricaimiTech/dev.CrossHub/issues/123))</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="note">Convenções das colunas (Rota, Token, Status, Asserção) e heurísticas SFDPOT/RCRCRC: <a href="#apendice-metodo">apêndice — método</a>.</p>
 </section>
 
-<nav class="toc">
-  <h3 style="margin-bottom:14px">Módulos, em ordem de prioridade</h3>
-  <ol>
-    <li><span class="n">01</span><a href="#m-agendamentos">Agendamentos</a></li>
-    <li><span class="n">02</span><a href="#m-formularios">Formulários</a></li>
-    <li><span class="n">03</span><a href="#m-lgpd">Privacidade e LGPD</a></li>
-    <li><span class="n">04</span><a href="#m-clientes">Clientes</a></li>
-    <li><span class="n">05</span><a href="#m-home">Home</a></li>
-    <li><span class="n">06</span><a href="#m-grupos">Grupos</a></li>
-    <li><span class="n">07</span><a href="#m-catalogo">Catálogo</a></li>
-    <li><span class="n">08</span><a href="#m-marca">Marca e aparência</a></li>
-    <li><span class="n">09</span><a href="#m-banners">Banners</a></li>
-    <li><span class="n">10</span><a href="#m-menu">Menu e navegação</a></li>
-    <li><span class="n">11</span><a href="#m-anonimizacao">Anonimização</a></li>
-    <li><span class="n">12</span><a href="#m-analytics">Analytics (add-on)</a></li>
-  </ol>
-  <p class="note" style="margin-top:16px">Antes deles: <a href="#situacao">situação atual</a> · <a href="#transversal">análise transversal</a> · <a href="#rcrcrc-global">priorização global</a>. Depois: <a href="#cobertura">cobertura do contrato</a> · <a href="#piramide">pirâmide</a> · <a href="#sequencia">sequência</a> · <a href="#saida">critérios de saída</a>.</p>
-</nav>
+<div class="report-tab-body" id="report-tab-body">
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var TAB_GROUPS = {
+    inicio: ["panorama", "status-execucao"],
+    contexto: ["situacao", "pivot-libre", "transversal", "rcrcrc-pointer"],
+    fechamento: ["cobertura", "piramide", "sequencia", "saida"],
+    apendice: ["apendice"],
+  };
+  var MODULES = [
+    "m-agendamentos", "m-formularios", "m-lgpd", "m-clientes", "m-home", "m-grupos",
+    "m-catalogo", "m-marca", "m-banners", "m-menu", "m-anonimizacao", "m-analytics",
+  ];
+  var ANCHOR_IN_TAB = {
+    "apendice-metodo": "apendice",
+    "apendice-rcrcrc": "apendice",
+  };
+  var idToTab = Object.create(null);
+  Object.keys(TAB_GROUPS).forEach(function (tab) {
+    TAB_GROUPS[tab].forEach(function (id) { idToTab[id] = tab; });
+  });
+  MODULES.forEach(function (id) { idToTab[id] = id; });
+
+  var wrap = document.querySelector(".wrap");
+  var tabBody = document.getElementById("report-tab-body");
+  var navEl = document.getElementById("report-nav");
+  if (!wrap || !tabBody) return;
+
+  function navHeight() {
+    return navEl ? navEl.offsetHeight : 0;
+  }
+
+  function syncNavHeight() {
+    document.documentElement.style.setProperty("--report-nav-h", navHeight() + "px");
+  }
+  syncNavHeight();
+  window.addEventListener("resize", syncNavHeight);
+
+  function scrollToTabContent(scrollTargetId, tab) {
+    syncNavHeight();
+    var navH = navHeight();
+    var pad = 16;
+    if (scrollTargetId) {
+      var el = document.getElementById(scrollTargetId);
+      if (el && !el.hidden) {
+        var y = el.getBoundingClientRect().top + window.scrollY - navH - pad;
+        window.scrollTo(0, Math.max(0, y));
+        return;
+      }
+    }
+    if (tab === "inicio") {
+      var pan = document.getElementById("panorama");
+      if (pan) {
+        var y0 = pan.getBoundingClientRect().top + window.scrollY - navH - pad;
+        window.scrollTo(0, Math.max(0, y0));
+      } else {
+        window.scrollTo(0, 0);
+      }
+      return;
+    }
+    var first = tabBody.querySelector('.report-pane:not([hidden])');
+    if (first) {
+      var y1 = first.getBoundingClientRect().top + window.scrollY - navH - pad;
+      window.scrollTo(0, Math.max(0, y1));
+    }
+  }
+
+  function paneRoot(id) {
+    var el = document.getElementById(id);
+    if (!el) return null;
+    if (el.classList.contains("report-pane")) return el;
+    if (el.tagName === "SECTION") return el;
+    return el.closest("section");
+  }
+
+  var paneIds = [];
+  Object.keys(TAB_GROUPS).forEach(function (k) { paneIds = paneIds.concat(TAB_GROUPS[k]); });
+  paneIds = paneIds.concat(MODULES);
+
+  paneIds.forEach(function (id) {
+    var pane = paneRoot(id);
+    var tab = idToTab[id];
+    if (!pane || !tab) return;
+    pane.classList.add("report-pane");
+    pane.dataset.reportTab = tab;
+    pane.hidden = true;
+  });
+
+  var buttons = document.querySelectorAll(".tab-btn");
+
+  function resolveHash(hash) {
+    if (!hash) return { tab: "inicio", scroll: null };
+    var id = hash.replace(/^#/, "");
+    if (ANCHOR_IN_TAB[id]) return { tab: ANCHOR_IN_TAB[id], scroll: id };
+    if (idToTab[id]) return { tab: idToTab[id], scroll: id };
+    return null;
+  }
+
+  function setActiveButtons(tab) {
+    buttons.forEach(function (btn) {
+      btn.setAttribute("aria-current", btn.dataset.tab === tab ? "page" : "false");
+    });
+  }
+
+  function showTab(tab, scrollTargetId) {
+    if (!tab) tab = "inicio";
+    wrap.querySelectorAll(".report-pane").forEach(function (pane) {
+      pane.hidden = pane.dataset.reportTab !== tab;
+    });
+    setActiveButtons(tab);
+    if (scrollTargetId) {
+      history.replaceState(null, "", "#" + scrollTargetId);
+    } else if (tab.indexOf("m-") === 0) {
+      history.replaceState(null, "", "#" + tab);
+    } else {
+      var first = TAB_GROUPS[tab] && TAB_GROUPS[tab][0];
+      if (first) history.replaceState(null, "", "#" + first);
+    }
+    requestAnimationFrame(function () {
+      scrollToTabContent(scrollTargetId, tab);
+    });
+  }
+
+  buttons.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      showTab(btn.dataset.tab, null);
+    });
+  });
+
+  wrap.addEventListener("click", function (e) {
+    var a = e.target.closest('a[href^="#"]');
+    if (!a) return;
+    var resolved = resolveHash(a.getAttribute("href"));
+    if (!resolved) return;
+    e.preventDefault();
+    showTab(resolved.tab, resolved.scroll);
+  });
+
+  window.addEventListener("hashchange", function () {
+    var resolved = resolveHash(location.hash);
+    if (resolved) showTab(resolved.tab, resolved.scroll);
+  });
+
+  var initial = resolveHash(location.hash) || { tab: "inicio", scroll: null };
+  showTab(initial.tab, initial.scroll);
+});
+</script>
 
 <section>
   <h2 id="situacao">1. Situação atual e pré-requisitos</h2>
@@ -244,29 +452,30 @@ footer{border-top:1px solid var(--rule);padding-top:20px;color:var(--ink-3);font
   <table>
     <thead><tr><th>Alvo</th><th>Runner</th><th>Configuração</th><th>Testes hoje</th></tr></thead>
     <tbody>
-      <tr><td class="dim">apps/api</td><td>Jest 29 + ts-jest + <b>supertest 7</b></td><td><code>apps/api/jest.config.cjs</code> — <code>testRegex: .*\.spec\.ts$</code>, ambiente node</td><td>7 specs — <b>nenhuma cobre <code>/dashboard/**</code></b></td></tr>
-      <tr><td class="dim">apps/dashboard</td><td>— placeholder <code>node --test</code></td><td>nenhuma</td><td><b>0</b></td></tr>
-      <tr><td class="dim">E2E</td><td>—</td><td>nenhum <code>playwright.config.*</code> no repositório</td><td><b>0</b></td></tr>
+      <tr><td class="dim">Monorepo — API</td><td>Jest + supertest</td><td><code>dev.CrossHub/__tests__/unit/api</code> + <code>__tests__/integration</code></td><td><b>~50</b> unit + <b>~22</b> integrados (Postgres no CI)</td></tr>
+      <tr><td class="dim">Monorepo — Dashboard</td><td>Vitest (node)</td><td><code>apps/dashboard/vitest.config.mts</code> → <code>__tests__/unit/front/dashboard</code></td><td><b>9</b> arquivos · <b>49/49</b> <code>UNIT-*</code> mapeados</td></tr>
+      <tr><td class="dim">qa.crosshub.pactum</td><td>Mocha + Pactum</td><td>specs por domínio em <code>*/tests/functional</code></td><td><b>~170</b> funcionais API</td></tr>
+      <tr><td class="dim">Componente / E2E produto</td><td>— / Playwright (só audit em <code>@crosshub/ui</code>)</td><td><code>__tests__/component</code> e <code>__tests__/e2e</code> — a criar</td><td><b>0</b> no monorepo · E2E Pactum parcial</td></tr>
     </tbody>
   </table>
   </div>
 
   <h3>1.1 O que já dá para reaproveitar</h3>
   <ul>
-    <li><b><code>apps/api/test/admin-contract.integration.spec.ts</code></b> — o padrão de teste de contrato a copiar: guarda de ambiente <code>describeIntegration</code>, bootstrap com <code>Test.createTestingModule({ imports: [AppModule] })</code> e semeadura por <code>pg.Pool</code> de superusuário com slugs únicos por rodada (<code>it-${Date.now().toString(36)}</code>).</li>
-    <li><b><code>apps/api/test/rls.integration.spec.ts</code></b> — prova de isolamento multi-tenant conectando como <code>application_user</code> (RLS aplicada) contra <code>postgres</code> (RLS ignorada). Cada módulo deve ter um caso análogo.</li>
-    <li><b><code>docs/test-strategy/estrategia-testes-admin.md</code></b> — a estratégia irmã do <code>apps/admin</code>. As camadas unitária e de componentes descritas lá valem aqui sem alteração de método.</li>
+    <li><b><code>dev.CrossHub/__tests__/integration/api/helpers/tenant-fixture.ts</code></b> — tenant + admin + cliente para supertest; espelha o que o Pactum faz com <code>provisionTenant</code>.</li>
+    <li><b><code>__tests__/integration/banco/rls.integration.spec.ts</code></b> — RLS com <code>application_user</code>; isolamento entre organizações continua obrigatório mesmo no produto Libre.</li>
+    <li><b><code>POST /dashboard/test-fixtures/tenant</code></b> — substitui <code>POST /admin/tenants</code> (ADR-002); exige <code>TEST_FIXTURES_ENABLED</code> + segredo compartilhado com o <code>pre-setup</code> deste repo.</li>
+    <li><b>Portões de CI no monorepo</b> — jobs <code>unitario</code>, <code>integrado</code>, <code>rastreabilidade-casos</code> e <code>rastreabilidade-rotas</code> contra este HTML/JSON.</li>
   </ul>
 
   <h3>1.2 Autenticação nos testes de API</h3>
-  <p class="note">Três audiências de JWT convivem na API, todas HS256 assinadas com <code>JWT_ACCESS_SECRET</code>, TTL de 15 minutos e <b>sem endpoint de refresh</b>. Os guards leem apenas <code>Authorization: Bearer &lt;token&gt;</code> — <b>não existe header de tenant</b>; o <code>tenantId</code> viaja dentro do token.</p>
+  <p class="note">Duas audiências de JWT no produto Libre, HS256 com <code>JWT_ACCESS_SECRET</code>, TTL de 15 minutos e <b>sem refresh</b>. O <code>tenantId</code> viaja no token — não há header de tenant. <b>Platform admin saiu com ADR-002.</b></p>
   <div class="tablewrap">
   <table>
     <thead><tr><th>Audiência</th><th>Login</th><th>Guard</th><th>Usa para testar</th></tr></thead>
     <tbody>
       <tr><td class="dim">Tenant admin</td><td><code>POST /auth/platform/tenant/login</code> <code>{ slug, email, password }</code></td><td><code>TenantAuthGuard</code></td><td>Todas as rotas <code>/dashboard/**</code></td></tr>
-      <tr><td class="dim">Cliente final</td><td><code>POST /auth/platform/public/activate</code> e <code>.../public/login</code></td><td><code>EndUserAuthGuard</code></td><td>O outro lado de formulários, reservas e agendamentos (<code>/public/**</code>)</td></tr>
-      <tr><td class="dim">Platform admin</td><td><code>POST /auth/platform/login</code></td><td><code>PlatformAuthGuard</code></td><td>Preparar tenant e add-ons para o cenário</td></tr>
+      <tr><td class="dim">Cliente final</td><td><code>POST /auth/platform/public/activate</code> e <code>.../public/login</code></td><td><code>EndUserAuthGuard</code></td><td>Formulários, reservas e agendamentos (<code>/public/**</code>) · app <code>apps/web</code></td></tr>
     </tbody>
   </table>
   </div>
@@ -280,10 +489,10 @@ footer{border-top:1px solid var(--rule);padding-top:20px;color:var(--ink-3);font
       <li><b>Suíte de specs de tenant em <code>apps/api/test/</code>.</b> Sugestão de organização: um arquivo por módulo (<code>dashboard-appointments.integration.spec.ts</code>, <code>dashboard-forms.integration.spec.ts</code>…), todos sobre o mesmo helper de seed.</li>
       <li><b>Fábrica de tenant de teste com dois papéis distintos.</b> Um Administrador Principal (<code>is_primary_admin = true</code>) e um administrador comum <b>sem</b> <code>can_view_sensitive_data</code>. Sem esse par, nenhum cenário de LGPD é executável — e LGPD é o eixo de permissão mais transversal do produto.</li>
       <li><b>Controle do relógio.</b> Janelas de 24 h e 7 dias na Home, limite de cancelamento de 24 h em Agendamentos e retenção em dias no LGPD dependem de tempo. Sem <i>fake timers</i> no backend ou semeadura com datas relativas, esses casos viram testes instáveis.</li>
-      <li><b>Extração da lógica pura para funções testáveis.</b> Hoje quase nada do que esta estratégia etiqueta como <span class="pill unit">UNIT</span> é chamável isoladamente: a aritmética de janelas vive dentro de <code>private async slots(db, …)</code> (<code>appointments.service.ts:72</code>), a distribuição de grupos dentro de <code>create(tenantId, actor, input)</code> (<code>groups.service.ts:156</code>) e as janelas da Home dentro de <code>home(tenantId, actorUserId)</code> (<code>dashboard.service.ts:43</code>) — todas atrás de uma transação. Sem extrair essas funções para módulos sem <code>db</code>, todo caso unitário desta estratégia vira caso de API, que é exatamente o desequilíbrio que se quer corrigir.</li>
-      <li><b>Ambiente com add-on <code>appointment_analytics</code> ligado e desligado.</b> <code>GET /dashboard/appointments/analytics</code> responde <code>400</code> quando o tenant não tem direito — precisa das duas configurações para testar os dois lados.</li>
+      <li><b>Camada de componente e E2E no monorepo.</b> Unitário e integração Jest já rodam no CI; faltam <code>__tests__/component/dashboard</code> (RTL+MSW) e <code>__tests__/e2e</code> (Playwright) para regressão dos painéis e jornadas cross-app.</li>
     </ul>
   </div>
+  <p class="note"><b>Concluído desde a versão anterior:</b> extração das funções puras dos 48 casos <code>UNIT-*</code> (<code>*.pure.ts</code>, <code>apps/dashboard/lib/</code>) — ver mapa em <code>docs/plans/mapa-casos-unit.md</code>.</p>
   <div class="callout">
     <h4>Restrição estrutural do front que muda o desenho dos testes E2E</h4>
     <p><code>apps/dashboard</code> tem <b>uma única rota, <code>/</code></b>. A navegação entre módulos é estado React (<code>dashboard-console.tsx:357</code>), não roteamento. Consequências diretas:</p>
@@ -292,6 +501,53 @@ footer{border-top:1px solid var(--rule);padding-top:20px;color:var(--ink-3);font
       <li><b>Recarregar a página volta para a Home</b> e descarta a subvisão. Isso é comportamento especificado (Menu, critério 8), não defeito — e por isso vira caso de teste.</li>
       <li><b>Atalho legítimo:</b> semear <code>sessionStorage</code> com <code>crosshub.tenantToken</code> e <code>crosshub.tenantSlug</code> para pular o login nos cenários que não estão testando o login. Vale lembrar do TTL de 15 minutos.</li>
     </ul>
+  </div>
+</section>
+
+<section>
+  <h2 id="pivot-libre">1b. Pivot Libre (ADR-002) — impacto na automação</h2>
+  <p class="note">Referência completa: <code>docs/plans/pivot-libre-impacto-testes.md</code>. O produto deixou de ser SaaS multi-cliente: sem Super Admin, sem planos/add-ons, Analytics sempre liberado, app público na raiz do domínio. O banco <b>continua</b> multi-tenant — testes de isolamento e fixtures por organização <b>permanecem</b>.</p>
+
+  <h3>Remover da estratégia e da suíte</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Item</th><th>Onde</th><th>Por quê</th></tr></thead>
+    <tbody>
+      <tr><td class="dim">Rotas <code>/admin/*</code> e <code>platformAuth</code></td><td>Specs, geradores OpenAPI, seed demo</td><td>Super Admin removido — ADR-002</td></tr>
+      <tr><td class="dim"><code>API-ANL-02</code>, <code>API-ANL-03</code> (403), <code>API-ANL-06</code></td><td>Estratégia (nunca implementados pós-pivot)</td><td>Sem rotas de interesse/paywall de Analytics</td></tr>
+      <tr><td class="dim"><code>E2E-ANL-01</code></td><td>Tabela Analytics abaixo</td><td>Dependia de admin plataforma + tela de bloqueio comercial</td></tr>
+      <tr><td class="dim">MN-03 (unitário)</td><td>Módulo Menu</td><td><code>hasModule()</code> saiu — menu fixo em <code>navigation.ts</code></td></tr>
+      <tr><td class="dim">Tenants reservados <code>ANL-01/02/03/06</code></td><td><code>data/tenants.data.ts</code></td><td>Textos ainda citavam add-on; manter só <code>ANL-03b</code> e <code>ANL-03c</code></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Alterar (casos e automação existentes)</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Item</th><th>Mudança</th><th>Por quê</th></tr></thead>
+    <tbody>
+      <tr><td class="dim"><code>UNIT-MN-01</code> · <code>E2E-MN-04</code></td><td>URL do app = <code>tenantAppUrl(webAppUrl)</code> sem <code>/{slug}</code></td><td>Cliente único — PWA na raiz</td></tr>
+      <tr><td class="dim"><code>API-AG-30</code></td><td>Só assertar <code>404</code> na rota legada <code>/dashboard/appointments/analytics</code></td><td>Indicadores migraram para <code>/dashboard/analytics/*</code> sem gate</td></tr>
+      <tr><td class="dim"><code>API-ANL-01</code> · <code>ANL-01-F</code></td><td>Sessão sem campo <code>addons</code>; <code>enabledModules</code> do seed Libre</td><td>Regressão contra paywall</td></tr>
+      <tr><td class="dim"><code>API-AG-33</code> · pré-condições com “Analytics ativo”</td><td>Remover menção a add-on</td><td>Analytics não exige entitlement</td></tr>
+      <tr><td class="dim"><code>openapi.json</code> (QA)</td><td>Regenerar de <code>staging</code>; limpar admin no gerador</td><td>Portão de rotas do CI</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Implementar (backlog)</h3>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Prioridade</th><th>Entrega</th></tr></thead>
+    <tbody>
+      <tr><td class="prio"><span class="pill fail">P0</span></td><td><code>dev.CrossHub/__tests__/component/dashboard/</code> — painéis extraídos com MSW</td></tr>
+      <tr><td class="prio"><span class="pill fail">P0</span></td><td>Playwright no monorepo — smokes <code>E2E-MN-01</code>, <code>E2E-AG-01</code>, <code>E2E-F-01</code></td></tr>
+      <tr><td class="prio"><span class="pill warn">P1</span></td><td>Estratégia / testes para <code>apps/web</code> (unit em <code>lib/</code> + E2E mínimo)</td></tr>
+      <tr><td class="prio"><span class="pill warn">P1</span></td><td>Limpar <code>scripts/generate-from-openapi.mjs</code> e <code>seed-demo-clinica.mjs</code> de rotas admin</td></tr>
+      <tr><td class="prio"><span class="pill info">P2</span></td><td>Casos de contrato pendentes (pagamentos/refunds de agenda) — seção Cobertura</td></tr>
+    </tbody>
+  </table>
   </div>
 </section>
 
@@ -338,59 +594,7 @@ footer{border-top:1px solid var(--rule);padding-top:20px;color:var(--ink-3);font
   </div>
 </section>
 
-<section>
-  <h2 id="rcrcrc-global">3. Priorização global — RCRCRC</h2>
-  <p class="note">As áreas que pontuam em cada dimensão, com a evidência que sustenta a classificação. O histórico de commits e a contagem de alterações por diretório foram consultados diretamente no repositório.</p>
-  <div class="tablewrap">
-  <table>
-    <thead><tr><th>Dimensão</th><th>Áreas do dashboard</th><th>Evidência</th><th>Peso</th></tr></thead>
-    <tbody>
-      <tr>
-        <td class="dim">Recent</td>
-        <td>Painéis extraídos do console · Agendamentos · Add-ons</td>
-        <td><code>dashboard-console.tsx</code> sofreu quatro extrações consecutivas <b>nesta branch</b> (<code>df6558a</code> → <code>6a943fb</code>: home, privacy, branding, shop) mais o codemod de cor <code>45ccb1b</code> e <code>66cf5ff</code> (<code>@layer base</code>). <code>apps/api/src/appointments</code> é o backend mais recente (8 commits, 14/08). <code>a9f448c fix: importar AuthModule no AddonsModule</code> mexeu na fiação de autenticação do gate de add-on.</td>
-        <td><span class="pill fail">Alto</span></td>
-      </tr>
-      <tr>
-        <td class="dim">Core</td>
-        <td>Login do tenant → Home → Clientes → Formulários</td>
-        <td>Sem essa linha o produto não entrega nada: é como o tenant cadastra quem atende e coleta informação. <code>apps/api/src/people</code> e <code>src/auth</code> lideram o histórico com 11 commits cada.</td>
-        <td><span class="pill fail">Alto</span></td>
-      </tr>
-      <tr>
-        <td class="dim">Risky</td>
-        <td>Agendamentos · LGPD · isolamento de tenant</td>
-        <td>Agendamentos concentra o único tratamento explícito de concorrência do produto (advisory lock por <code>tenant + serviço + profissional + início</code>) e uma máquina de sete estados. LGPD decide quem lê dado sensível, com <code>403</code> e <code>409</code> exigidos por contrato. Falha de RLS vaza dado entre clientes.</td>
-        <td><span class="pill fail">Alto</span></td>
-      </tr>
-      <tr>
-        <td class="dim">Configuration-sensitive</td>
-        <td>Agendamentos · Formulários · Banners · Catálogo</td>
-        <td><code>approval_mode</code>, <code>professional_selection_mode</code>, <code>audience_mode</code>, <code>submission_mode</code>, retenção de 1 a 3650 dias, carrossel (intervalo, altura, indicadores), gate do add-on <code>appointment_analytics</code> e o e-mail Resend que só dispara com <code>contact_email</code> + <code>RESEND_API_KEY</code> + <code>EMAIL_FROM</code>. Cada chave dessas dobra o espaço de teste.</td>
-        <td><span class="pill warn">Médio</span></td>
-      </tr>
-      <tr>
-        <td class="dim">Conformance</td>
-        <td>LGPD · Agendamentos · contrato Swagger</td>
-        <td>As especificações exigem <b>mensagens literais</b> ("Você não possui a permissão para visualizar respostas sensíveis.", "Para realizar outro agendamento neste dia, entre em contato com a administração.", "Horário indisponível."). O contrato publicado em <code>/docs-json</code> precisa bater com as rotas reais.</td>
-        <td><span class="pill warn">Médio</span></td>
-      </tr>
-      <tr>
-        <td class="dim">Complex</td>
-        <td>Agendamentos · wizard de Grupos · wizard de Formulários</td>
-        <td>Agendamentos é a especificação mais extensa de <code>docs/dash/</code>. O wizard de Grupos tem distribuição sequencial com <b>descarte silencioso de excedente</b>. O de Formulários tem quatro passos e substituição integral do conjunto de perguntas.</td>
-        <td><span class="pill warn">Médio</span></td>
-      </tr>
-    </tbody>
-  </table>
-  </div>
-  <div class="callout">
-    <h4>Cruzamento das dimensões</h4>
-    <p><b>Agendamentos pontua em quatro das seis dimensões</b> — Recent, Risky, Configuration-sensitive e Complex — e por isso abre este documento. É onde uma falha custa mais caro: um horário vendido duas vezes é um cliente na porta sem atendimento.</p>
-    <p>Mas o risco <i>imediato</i>, o que decide se esta branch pode ser mesclada, é outro: a <b>regressão dos quatro painéis extraídos do console</b> (Recent × Core). Extrair quatro painéis de um console de milhares de linhas sem nenhum teste é a operação mais perigosa em curso, e ela não tem nada a ver com regra de negócio — é fiação de props e token de cor. Daí o caso <code>E2E-REG-01</code> ser tratado como pré-condição de merge, não como item de backlog.</p>
-    <p><b>Ordem de ataque:</b> (1) <code>E2E-REG-01</code> e os P0 de Agendamentos e LGPD; (2) o núcleo Clientes/Formulários; (3) o resto.</p>
-  </div>
-</section>
+<p class="note report-pane" id="rcrcrc-pointer" data-report-tab="contexto" hidden>Priorização global RCRCRC (ordem de ataque entre módulos): <a href="#apendice-rcrcrc">apêndice</a>.</p>
 
 <section class="module risk-alto" id="m-agendamentos">
   <div class="mhead"><h2>1. Agendamentos</h2><span class="pill fail">Risco alto</span><span class="pill info">Recent · Risky · Config · Complex</span></div>
@@ -410,7 +614,7 @@ footer{border-top:1px solid var(--rule);padding-top:20px;color:var(--ink-3);font
       <tr><td class="dim">Structure</td><td>Oito abas no console (agenda, serviços, profissionais, disponibilidade, bloqueios, pacotes, configurações, indicadores), seis tabelas (<code>professionals</code>, <code>appointment_services</code>, <code>service_professionals</code>, <code>professional_availability</code>, <code>appointment_blocks</code>, <code>appointments</code>) mais <code>calendar_holidays</code>, que é <b>global e não tem <code>tenant_id</code></b>.</td><td>Tabela global entre tenants é a única exceção ao modelo de isolamento. Precisa de caso próprio.</td></tr>
       <tr><td class="dim">Function</td><td>Geração de janelas, distribuição automática de profissional, aprovação manual ou automática, bloqueios, reagendamento (cancelar + criar ligados por <code>rescheduled_from_id</code>), pagamentos, reembolsos e crédito de pacote.</td><td>A janela é <b>calculada, nunca persistida</b> — não há linha no banco para conferir. Erro de aritmética só aparece comparando com a regra escrita.</td></tr>
       <tr><td class="dim">Data</td><td><code>weekday</code> 0=domingo…6=sábado, turnos <code>morning/afternoon/night</code> (só rótulo visual), duração &gt; 0, intervalo ≥ 0, capacidade inteira &gt; 0, nome de serviço único por tenant sem diferenciar maiúsculas.</td><td>Off-by-one em <code>weekday</code> desloca a agenda inteira em um dia e passa despercebido em teste de dia único.</td></tr>
-      <tr><td class="dim">Platform</td><td>Advisory lock do Postgres, RLS, quatro índices mínimos em <code>appointments</code>, gate de capability <code>appointment_analytics</code>.</td><td>O lock é a única defesa contra <i>overbooking</i>. Se o teste não for concorrente de verdade, ele passa sem provar nada.</td></tr>
+      <tr><td class="dim">Platform</td><td>Advisory lock do Postgres, RLS, índices em <code>appointments</code>, export CSV de Analytics, PWA <code>apps/web</code>.</td><td>O lock é a única defesa contra <i>overbooking</i>. Se o teste não for concorrente de verdade, ele passa sem provar nada.</td></tr>
       <tr><td class="dim">Operations</td><td>Admin cria, aprova, recusa, cancela, conclui e marca falta; cliente cria e cancela pelo app. Regras <b>assimétricas</b>: o limite de um por dia e o prazo de 24 h valem só para o cliente.</td><td>Aplicar a regra do cliente ao admin trava a operação do balcão; não aplicá-la ao cliente abre a agenda.</td></tr>
       <tr><td class="dim">Time</td><td>Prazo de 24 h no fuso do tenant, janelas já passadas omitidas, feriados nacionais fixos e móveis, agenda por dia/semana/mês.</td><td>Feriado móvel (Páscoa, Carnaval, Corpus Christi) muda de data todo ano — teste com data fixa apodrece.</td></tr>
     </tbody>
@@ -424,7 +628,7 @@ footer{border-top:1px solid var(--rule);padding-top:20px;color:var(--ink-3);font
     <tbody>
       <tr><td class="dim">Recent</td><td>Backend mais novo do repositório: 8 commits, o último em 14/08/2026 (<code>3450214 complete saas appointment operations</code>, <code>f779c74 add appointment financials and packages</code>, <code>950169f feat: permitir editar agendamentos aprovados</code>).</td><td><span class="pill fail">Alto</span></td></tr>
       <tr><td class="dim">Risky</td><td>Único ponto do produto com concorrência tratada. Sete estados com transições irreversíveis. Envolve dinheiro (pagamentos, reembolsos, créditos).</td><td><span class="pill fail">Alto</span></td></tr>
-      <tr><td class="dim">Configuration-sensitive</td><td><code>approval_mode</code> × <code>professional_selection_mode</code> × capacidade × add-on: quatro eixos independentes de configuração.</td><td><span class="pill fail">Alto</span></td></tr>
+      <tr><td class="dim">Configuration-sensitive</td><td><code>approval_mode</code> × <code>professional_selection_mode</code> × capacidade × fuso da organização.</td><td><span class="pill fail">Alto</span></td></tr>
       <tr><td class="dim">Complex</td><td>Especificação mais longa de <code>docs/dash/</code>; aritmética de janelas, desempate de distribuição em três níveis, interação entre bloqueio e elegibilidade.</td><td><span class="pill fail">Alto</span></td></tr>
       <tr><td class="dim">Conformance</td><td>Três mensagens literais exigidas pela especificação.</td><td><span class="pill warn">Médio</span></td></tr>
     </tbody>
@@ -487,11 +691,11 @@ footer{border-top:1px solid var(--rule);padding-top:20px;color:var(--ink-3);font
       <tr><td class="id">API-AG-27<span class="auto"><span class="pill pass">automatizado</span><small>AG-27-F.test.ts</small></span></td><td>Feriado é visual, não bloqueia</td><td class="rota"><span class="verbo">GET</span> /dashboard/appointments/calendar<span class="arranjo">GET /dashboard/appointments/availability</span></td><td class="tok"><span class="pill tenant">tenantAuth</span></td><td class="status">200</td><td>Data de feriado nacional sem bloqueio cadastrado</td><td>O feriado aparece em <code>holidays[]</code> com <code>name</code>, e a disponibilidade da data segue normal</td><td>AG-19</td><td class="prio"><span class="pill warn">P1</span></td></tr>
       <tr><td class="id">API-AG-28<span class="auto"><span class="pill pass">automatizado</span><small>AG-28-F.test.ts</small></span></td><td>Feriado móvel</td><td class="rota"><span class="verbo">GET</span> /dashboard/appointments/calendar</td><td class="tok"><span class="pill tenant">tenantAuth</span></td><td class="status">200</td><td>Carnaval, Páscoa e Corpus Christi em dois anos distintos</td><td><code>holidays[].date</code> correto nos dois anos — a tabela não pode ter só data fixa</td><td>AG-20</td><td class="prio"><span class="pill info">P2</span></td></tr>
       <tr><td class="id">API-AG-29<span class="auto"><span class="pill pass">automatizado</span><small>AG-29-F.test.ts</small></span></td><td>Exclusão de profissional com histórico</td><td class="rota"><span class="verbo">DELETE</span> /dashboard/appointments/professionals/{id}<span class="arranjo">POST /dashboard/appointments</span></td><td class="tok"><span class="pill tenant">tenantAuth</span></td><td class="status">409</td><td>Profissional com agendamentos</td><td><i>"Este profissional possui agendamentos e não pode ser excluído. Inative-o para preservar o histórico."</i>. Sem histórico, <code>200</code></td><td>AG-21</td><td class="prio"><span class="pill warn">P1</span></td></tr>
-      <tr><td class="id">API-AG-30<span class="auto"><span class="pill info">coberto por API-ANL-03</span></span></td><td>Gate do add-on de indicadores — <b>substituído por <code>API-ANL-03</code></b>: a rota saiu do contrato e o add-on <code>appointment_analytics</code> virou <code>analytics</code></td><td class="rota"><span class="verbo">GET</span> /dashboard/appointments/analytics<span class="arranjo">ausente do contrato</span></td><td class="tok"><span class="pill aberta">n/a</span></td><td class="status">404</td><td>Tenant qualquer</td><td>A rota antiga não existe mais; o gate do add-on é verificado nas rotas <code>/dashboard/analytics/*</code> pelo caso <code>API-ANL-03</code></td><td>—</td><td class="prio"><span class="pill info">P2</span></td></tr>
+      <tr><td class="id">API-AG-30<span class="auto"><span class="pill pass">automatizado</span><small>AG-30-F.test.ts</small></span></td><td>Rota legada de indicadores na agenda — <b>ausente do contrato</b></td><td class="rota"><span class="verbo">GET</span> /dashboard/appointments/analytics<span class="arranjo">ausente do contrato</span></td><td class="tok"><span class="pill tenant">tenantAuth</span></td><td class="status">404</td><td>Qualquer admin autenticado</td><td><code>404</code> — indicadores vivem em <code>/dashboard/analytics/*</code> (<code>API-ANL-03b</code> em diante), <b>sem 403 de add-on</b> (ADR-002)</td><td>—</td><td class="prio"><span class="pill info">P2</span></td></tr>
       <tr><td class="id">API-AG-31<span class="auto"><span class="pill pass">automatizado</span><small>AG-31-F.test.ts</small></span></td><td>Crédito de pacote — venda e consumo</td><td class="rota"><span class="verbo">GET</span> /dashboard/appointments/package-contracts/{id}/ledger<span class="arranjo">POST /dashboard/appointments/packages · POST /dashboard/appointments/people/{personId}/packages · POST /dashboard/appointments</span></td><td class="tok"><span class="pill tenant">tenantAuth</span></td><td class="status">200</td><td>Pacote vendido à pessoa; agendamento criado consumindo crédito</td><td><code>grant</code> com <code>deltaCredits</code> positivo e <code>consume</code> negativo; <code>balance</code> do último lançamento igual a <code>totalCredits - consumidos</code></td><td>—<span class="pill info">novo</span></td><td class="prio"><span class="pill fail">P0</span></td></tr>
       <tr><td class="id">API-AG-31b<span class="auto"><span class="pill pass">automatizado</span><small>AG-31b-F.test.ts</small></span></td><td>Crédito de pacote — cancelamento e restauração excepcional</td><td class="rota"><span class="verbo">POST</span> /dashboard/appointments/{id}/package-credit/exceptional-restore<span class="arranjo">PUT /dashboard/appointments/settings · PATCH /dashboard/appointments/{id}</span></td><td class="tok"><span class="pill tenant">tenantAuth</span></td><td class="status">200</td><td>Agendamento pago por pacote foi cancelado sem devolver crédito (política desligada)</td><td>Lançamento <code>restore</code> com <code>reason</code> prefixado por <i>"Devolução excepcional:"</i>; o <code>balance</code> fecha. Sem <code>reason</code>, <code>409</code></td><td>—<span class="pill info">novo</span></td><td class="prio"><span class="pill fail">P0</span></td></tr>
       <tr><td class="id">API-AG-32<span class="auto"><span class="pill pass">automatizado</span><small>AG-32-F.test.ts</small></span></td><td>Notas internas não vazam para o app</td><td class="rota"><span class="verbo">GET</span> /public/me/appointments<span class="arranjo">POST /dashboard/appointments · POST /dashboard/appointments/blocks</span></td><td class="tok"><span class="pill enduser">endUserAuth</span></td><td class="status">200</td><td>Agendamento com <code>notes</code> preenchido e bloqueio com <code>reason</code></td><td>Nenhum item do payload traz <code>notes</code> do admin nem o motivo do bloqueio</td><td>AG-18</td><td class="prio"><span class="pill fail">P0</span></td></tr>
-      <tr><td class="id">API-AG-33<span class="auto"><span class="pill pass">automatizado</span><small>AG-33-F.test.ts</small></span></td><td>Pagamento de pacote — venda em aberto, pagamento pelo contrato e venda paga (issue #145)</td><td class="rota"><span class="verbo">POST</span> /dashboard/appointments/package-contracts/{id}/payments<span class="arranjo">POST /dashboard/appointments/packages · POST /dashboard/appointments/people/{personId}/packages · GET /dashboard/appointments/people/{personId}/packages · GET /dashboard/appointments/people/{personId}/financial-summary · GET /dashboard/analytics/customers</span></td><td class="tok"><span class="pill tenant">tenantAuth</span></td><td class="status">201</td><td>Add-on Analytics ativo; pessoa nova e pacote criados no caso; uma venda sem pagamento e outra com <code>paymentAmountCents</code> igual ao preço</td><td>Sem pagamento: resumo com <code>outstandingCents</code> igual ao preço, <code>receivedCents</code> 0 e contrato com <code>paidCents</code> 0 e a pessoa em <code>outstanding[]</code> do Analytics com <code>packagesCents</code> igual ao preço. Pagamento parcial pelo contrato: <code>201</code> com <code>paidCents</code>/<code>outstandingCents</code> e resumo abatido; acima do saldo, <code>409</code> <i>"O pagamento excede o saldo em aberto."</i>. Venda paga: <code>paidCents</code> igual ao preço; valor sem <code>paymentMethod</code>, <code>400</code> <i>"Informe a forma de pagamento."</i></td><td>AG-31<span class="pill info">novo</span></td><td class="prio"><span class="pill fail">P0</span></td></tr>
+      <tr><td class="id">API-AG-33<span class="auto"><span class="pill pass">automatizado</span><small>AG-33-F.test.ts</small></span></td><td>Pagamento de pacote — venda em aberto, pagamento pelo contrato e venda paga (issue #145)</td><td class="rota"><span class="verbo">POST</span> /dashboard/appointments/package-contracts/{id}/payments<span class="arranjo">POST /dashboard/appointments/packages · POST /dashboard/appointments/people/{personId}/packages · GET /dashboard/appointments/people/{personId}/packages · GET /dashboard/appointments/people/{personId}/financial-summary · GET /dashboard/analytics/customers</span></td><td class="tok"><span class="pill tenant">tenantAuth</span></td><td class="status">201</td><td>Tenant com seed normal; pessoa nova e pacote criados no caso; uma venda sem pagamento e outra com <code>paymentAmountCents</code> igual ao preço</td><td>Sem pagamento: resumo com <code>outstandingCents</code> igual ao preço, <code>receivedCents</code> 0 e contrato com <code>paidCents</code> 0 e a pessoa em <code>outstanding[]</code> do Analytics com <code>packagesCents</code> igual ao preço. Pagamento parcial pelo contrato: <code>201</code> com <code>paidCents</code>/<code>outstandingCents</code> e resumo abatido; acima do saldo, <code>409</code> <i>"O pagamento excede o saldo em aberto."</i>. Venda paga: <code>paidCents</code> igual ao preço; valor sem <code>paymentMethod</code>, <code>400</code> <i>"Informe a forma de pagamento."</i></td><td>AG-31<span class="pill info">novo</span></td><td class="prio"><span class="pill fail">P0</span></td></tr>
       <tr><td class="id">API-AG-34<span class="auto"><span class="pill pass">automatizado</span><small>AG-34-F.test.ts</small></span></td><td>Exclusão de serviço coberto por pacote (issue #146)</td><td class="rota"><span class="verbo">DELETE</span> /dashboard/appointments/services/{id}<span class="arranjo">POST /dashboard/appointments/services · POST /dashboard/appointments/packages</span></td><td class="tok"><span class="pill tenant">tenantAuth</span></td><td class="status">409</td><td>Serviço vinculado a um pacote</td><td><i>"Este serviço faz parte de um pacote e não pode ser excluído. Inative-o para preservar o histórico."</i>. Sem pacote, <code>200</code></td><td>AG-31<span class="pill info">novo</span></td><td class="prio"><span class="pill warn">P1</span></td></tr>
       <tr><td class="id">API-AG-XT<span class="auto"><span class="pill pass">automatizado</span><small>AG-XT-F.test.ts</small></span></td><td>Isolamento entre tenants</td><td class="rota"><span class="verbo">GET</span> /dashboard/appointments</td><td class="tok"><span class="pill tenant">tenantAuth</span></td><td class="status">200</td><td>Token do tenant A; serviço, profissional, bloqueio e agendamento criados no tenant B</td><td>A listagem do A nunca traz registro do B; acesso direto por id do B dá <code>404</code></td><td>AG-18</td><td class="prio"><span class="pill fail">P0</span></td></tr>
     </tbody>
@@ -507,7 +711,7 @@ footer{border-top:1px solid var(--rule);padding-top:20px;color:var(--ink-3);font
       <tr><td class="id">E2E-AG-02</td><td>Serviço com <code>approval_mode: automatic</code>; cliente agenda</td><td>Nasce aprovado e aparece na agenda do admin sem nenhuma ação dele</td><td class="prio"><span class="pill fail">P0</span></td></tr>
       <tr><td class="id">E2E-AG-03</td><td>Admin cria bloqueio sobre um dia com agendamento marcado</td><td>O agendamento existente permanece e a agenda <b>destaca o conflito</b>; a janela deixa de aceitar novos</td><td class="prio"><span class="pill warn">P1</span></td></tr>
       <tr><td class="id">E2E-AG-04</td><td>Cliente tenta cancelar um agendamento a menos de 24 h</td><td>A interface <b>não chega a chamar a mutação</b> e explica o motivo — regra de UI exigida pela especificação</td><td class="prio"><span class="pill warn">P1</span></td></tr>
-      <tr><td class="id">E2E-AG-05</td><td>Admin percorre as oito abas do módulo</td><td>Nenhuma aba quebra, a navegação preserva o contexto e os indicadores respeitam o add-on</td><td class="prio"><span class="pill info">P2</span></td></tr>
+      <tr><td class="id">E2E-AG-05</td><td>Admin percorre as sete abas de Agendamentos</td><td>Nenhuma aba quebra; Indicadores saíram para a seção Analytics (duas abas sempre visíveis)</td><td class="prio"><span class="pill info">P2</span></td></tr>
     </tbody>
   </table>
   </div>
@@ -1367,9 +1571,8 @@ footer{border-top:1px solid var(--rule);padding-top:20px;color:var(--ink-3);font
   <table>
     <thead><tr><th>ID</th><th>Alvo</th><th>O que prova</th><th>Relação</th><th>Prio</th></tr></thead>
     <tbody>
-      <tr><td class="id">UNIT-MN-01<span class="auto"><span class="pill pass">automatizado</span><small>navegacao.test.ts</small></span></td><td><code>tenantAppUrl()</code> → extrair para função pura <code>(webAppUrl, slug)</code> · <code>dashboard-console.tsx:1958</code></td><td>Slug ausente devolve <code>null</code> (e é isso que dispara a mensagem de erro, não uma URL quebrada); barra final da base é removida antes de concatenar; slug com espaço.</td><td>E2E-MN-04</td><td class="prio"><span class="pill warn">P1</span></td></tr>
-      <tr><td class="id">UNIT-MN-02<span class="auto"><span class="pill pass">automatizado</span><small>navegacao.test.ts</small></span></td><td>derivação das abas de Agendamentos a partir da sessão</td><td><b>As abas de Agendamentos não dependem de <code>canViewSensitiveData</code></b>: a lista é a mesma para qualquer <code>tenant_admin</code> da organização que tem o módulo habilitado. O que esconde <i>item de menu</i> é o módulo em <code>enabledModules</code>, e isso é o <b>UNIT-MN-03</b>. O <b>ADR-004</b> continua valendo nos dois casos: <i>"visibilidade de interface não é controle de segurança e não impede chamadas diretas às rotas"</i> — a fronteira é a API, que responde <code>403</code> a quem não tem o módulo.</td><td>API-MN-03</td><td class="prio"><span class="pill warn">P1</span></td></tr>
-      <tr><td class="id">UNIT-MN-03<span class="auto"><span class="pill fail">pendente</span></span></td><td><code>hasModule()</code> e <code>showsContentGroup()</code> · <code>apps/dashboard/lib/navigation.ts</code></td><td>O item só aparece se o módulo está em <code>enabledModules</code> da sessão. Depois do <b>ADR-002</b> essa lista é <b>configuração fixa da organização</b>, não consequência de plano contratado — o <code>RequiresModuleGuard</code> continua sendo a fronteira. <b>Lista ausente mostra tudo</b> — um contrato antigo, sem o campo, não pode apagar o menu inteiro; <b>lista presente vale</b>, inclusive vazia. O grupo CONTEÚDO some quando nenhum item dele sobra. Segurança segue na API (<code>403</code>).</td><td>—</td><td class="prio"><span class="pill warn">P1</span></td></tr>
+      <tr><td class="id">UNIT-MN-01<span class="auto"><span class="pill pass">automatizado</span><small>navegacao.test.ts</small></span></td><td><code>tenantAppUrl(webAppUrl)</code> · <code>apps/dashboard/lib/tenant-app-url.ts</code></td><td>Produto cliente único: devolve a base do PWA sem <code>/{slug}</code>; remove barra final.</td><td>E2E-MN-04</td><td class="prio"><span class="pill warn">P1</span></td></tr>
+      <tr><td class="id">UNIT-MN-02<span class="auto"><span class="pill pass">automatizado</span><small>navegacao.test.ts</small></span></td><td><code>appointmentsTabs()</code> · <code>analyticsTabs()</code> · <code>navigation.ts</code></td><td>Sete abas de Agendamentos e duas de Analytics sempre visíveis (<b>AN-04</b>). Ex-<code>UNIT-MN-03</code> (gating por módulo) removido — ADR-002.</td><td>API-MN-03</td><td class="prio"><span class="pill warn">P1</span></td></tr>
     </tbody>
   </table>
   </div>
@@ -1394,7 +1597,7 @@ footer{border-top:1px solid var(--rule);padding-top:20px;color:var(--ink-3);font
       <tr><td class="id">E2E-MN-01</td><td>Percorrer todos os itens dos três grupos do menu</td><td>Cada item ativa a seção certa, marca o item como ativo e abre a <b>visão inicial</b> do módulo. Banners e Marca chegam à mesma seção com subvisões diferentes.</td><td class="prio"><span class="pill fail">P0</span></td></tr>
       <tr><td class="id">E2E-MN-02</td><td>Iniciar a edição de um cliente → sair para outra seção → voltar</td><td>O rascunho foi descartado, conforme a especificação — não reaparece meio preenchido</td><td class="prio"><span class="pill warn">P1</span></td></tr>
       <tr><td class="id">E2E-MN-03</td><td>Sair pelo botão; e provocar expiração de sessão</td><td>Os dois caminhos limpam <code>crosshub.tenantToken</code> e <code>crosshub.tenantSlug</code> e levam ao login</td><td class="prio"><span class="pill fail">P0</span></td></tr>
-      <tr><td class="id">E2E-MN-04</td><td>"Ver seu app" com slug presente, e com slug ausente</td><td>Com slug, abre <code>{webAppUrl}/{slug}</code> em nova aba. Sem slug, <b>não abre</b> e informa o erro.</td><td class="prio"><span class="pill warn">P1</span></td></tr>
+      <tr><td class="id">E2E-MN-04</td><td>"Ver seu app" abre o PWA da Libre</td><td>Abre <code>{webAppUrl}</code> (raiz) em nova aba — sem segmento de slug no path (ADR-002).</td><td class="prio"><span class="pill warn">P1</span></td></tr>
     </tbody>
   </table>
   </div>
@@ -1477,15 +1680,15 @@ footer{border-top:1px solid var(--rule);padding-top:20px;color:var(--ink-3);font
   </div>
 </section>
 <section class="module risk-alto" id="m-analytics">
-  <div class="mhead"><h2>12. Analytics (add-on)</h2><span class="pill fail">Risco alto</span><span class="pill info">Recent · Risky · Complex · Conformance</span></div>
+  <div class="mhead"><h2>12. Analytics</h2><span class="pill warn">Risco médio</span><span class="pill info">Recent · Complex · Conformance</span></div>
   <dl class="modmeta">
     <dt>Especificação</dt><dd><code>docs/dash/analytics/prd-adr-especificacao-analytics.md</code> · histórias <code>AN-01</code> a <code>AN-08</code> (épico #134)</dd>
     <dt>API</dt><dd><code>/dashboard/analytics</code> (4 rotas) · <code>/dashboard/session</code> (<code>enabledModules</code>) · <code>apps/api/src/analytics/</code></dd>
     <dt>Front</dt><dd>aba Analytics do dashboard (Agendamentos e Clientes) e tela de bloqueio com pedido de interesse</dd>
     <dt>QA na doc</dt><dd>história <code>AN-07</code> (issue #141)</dd>
   </dl>
-  <p class="note">Indicadores de agenda e de clientes vendidos como <b>add-on</b> <code>analytics</code>. O gate é da API: sem o add-on válido (ativo sem <code>endsAt</code> vencido, ou em teste no prazo) toda rota do módulo responde <code>403</code> e a tela de bloqueio registra um pedido de interesse, idempotente por 7 dias. Os IDs dos casos usam o prefixo <code>ANL</code> porque <code>AN</code> já pertence à Anonimização (módulo 11); a relação com as histórias <code>AN-xx</code> do produto está na coluna Cenário.</p>
-  <p class="note"><b>Massa.</b> O add-on é linha única por tenant, então cada caso que liga ou desliga o add-on tem o seu próprio tenant (<code>tenantFor("ANL-xx")</code>). A ocupação usa um profissional exclusivo por execução e um dia reservado ao caso, porque os tenants acumulam massa entre execuções; as asserções de contagem são relativas à janela que a API devolve em <code>period</code>.</p>
+  <p class="note">Indicadores de agenda e de clientes em <code>/dashboard/analytics/**</code>. Desde o <b>ADR-002</b> o módulo é <b>sempre disponível</b> — não há paywall, rotas de interesse nem campo <code>addons</code> na sessão (<code>API-ANL-01</code>). Os IDs usam o prefixo <code>ANL</code> porque <code>AN</code> já pertence à Anonimização (módulo 11).</p>
+  <p class="note"><b>Massa.</b> Casos de ocupação (<code>API-ANL-03b</code>, <code>-03c</code>) usam tenant reservado e profissional exclusivo por execução; asserções são relativas ao <code>period</code> devolvido pela API.</p>
 
   <h3>Casos de API <span class="pill api">camada API · funcional no endpoint</span></h3>
   <div class="tablewrap">
@@ -1506,7 +1709,7 @@ footer{border-top:1px solid var(--rule);padding-top:20px;color:var(--ink-3);font
   <table>
     <thead><tr><th>ID</th><th>Jornada</th><th>Valida</th><th>Prio</th></tr></thead>
     <tbody>
-      <tr><td class="id">E2E-ANL-01</td><td>Admin de tenant sem o add-on abre a aba Analytics, pede o teste, e o admin da plataforma ativa o add-on</td><td>Tela de bloqueio com o pedido registrado uma vez só; aviso no card do tenant no admin; após ativar, a aba carrega os indicadores e o aviso some</td><td class="prio"><span class="pill warn">P1</span></td></tr>
+      <tr><td class="id">E2E-ANL-01<span class="auto"><span class="pill aberta">removido</span></span></td><td><s>Pedido de interesse + ativação pelo Super Admin</s></td><td>Fluxo comercial eliminado (ADR-002). Substituir por E2E que abre Analytics e valida as duas abas + export CSV, se necessário.</td><td class="prio"><span class="pill aberta">—</span></td></tr>
     </tbody>
   </table>
   </div>
@@ -1532,7 +1735,7 @@ footer{border-top:1px solid var(--rule);padding-top:20px;color:var(--ink-3);font
     <h4>Campos de cada caso</h4>
     <ul>
       <li><code>rotas[]</code> — cada uma com <code>papel</code>: <code>acao</code> é o alvo da asserção, <code>arranjo</code> é preparação, <code>inexistente</code> marca o caso cujo ponto é a rota não existir (<code>API-AN-01</code> e <code>-02</code>).</li>
-      <li><code>token</code> — <code>tenantAuth</code>, <code>endUserAuth</code>, <code>platformAuth</code>, ou <code>null</code> em rota aberta.</li>
+      <li><code>token</code> — <code>tenantAuth</code>, <code>endUserAuth</code>, ou <code>null</code> em rota aberta. <code>platformAuth</code> saiu com ADR-002.</li>
       <li><code>status[]</code> — na ordem das asserções. <code>[409, 200]</code> em <code>API-AG-19</code> são as duas bordas do prazo.</li>
       <li><code>literais[]</code> — as mensagens entre aspas extraídas da asserção, prontas para o <code>expect</code>.</li>
       <li><code>campos[]</code> — os identificadores citados em <code>&lt;code&gt;</code> na asserção.</li>
@@ -1543,7 +1746,7 @@ footer{border-top:1px solid var(--rule);padding-top:20px;color:var(--ink-3);font
   <h3>Três pontos que o pedido da automação levantou</h3>
   <div class="callout plain">
     <ul>
-      <li><b>Contagem do painel.</b> Estava em 159 contra 150 nas tabelas. O painel agora mostra 166, que é o número que sai do JSON — e o JSON é gerado do próprio HTML, então os dois não voltam a divergir.</li>
+      <li><b>Contagem do painel.</b> O painel e o JSON devem mostrar o mesmo total de casos de API (hoje <b>178</b>), gerado a partir das tabelas — não repetir número escrito à mão.</li>
       <li><b>Módulo de auditoria com endpoint de leitura.</b> <code>GET /dashboard/audit-logs</code> (tenantAuth, somente leitura, paginado, filtros por ação, ator, entidade e período) entrou pelo #96/#98. Os casos que verificam a trilha (<code>API-C-15</code>, <code>API-F-21</code>, <code>API-LGPD-13</code>) fazem a ação por HTTP e conferem o registro pela própria API, cada um na pasta do seu módulo; a pasta <code>audit/</code> da automação guarda só o cliente gerado da rota.</li>
       <li><b>Fonte de verdade em <code>API-AG-22</code>.</b> O <b>código é a fonte</b>: o cliente não remarca, só cancela. A especificação é que está desatualizada. O caso assertar <code>404</code> congela o comportamento atual de propósito — se a remarcação pelo cliente virar requisito, o teste falha e obriga a revisão, que é o efeito desejado.</li>
     </ul>
@@ -1552,19 +1755,20 @@ footer{border-top:1px solid var(--rule);padding-top:20px;color:var(--ink-3);font
 
 <section>
   <h2 id="piramide">13. A pirâmide proposta</h2>
-  <p class="note">A distribuição reflete uma decisão consciente: <b>o peso vai para a camada de API</b> — mas não porque a base unitária seja dispensável, e sim porque a camada de API é a que prova regra de negócio, permissão e isolamento de tenant. Quando este documento foi escrito, a base unitária era <i>inalcançável</i> — a lógica pura estava trancada em métodos privados que recebiam uma transação, e cada caso <code>UNIT-*</code> marcado com <span class="pill warn">extrair</span> era um pedido de refatoração. <b>Essas extrações foram feitas e os 46 casos estão implementados</b> — o selo saiu das linhas correspondentes, e volta a aparecer se um caso novo exigir refatoração. O Dashboard é uma página só, com toda a lógica de negócio no backend — testar pela interface o que a API decide sairia caro e frágil. O E2E fica reservado para o que só existe na integração: dois aplicativos, duas audiências de token, e o que a interface promete além do contrato.</p>
+  <p class="note"><b>Ordem de prioridade (Libre):</b> (1) unitário — feedback rápido e linha exata que quebrou; (2) integração API — regra, permissão LGPD e RLS; (3) componente — painéis e wizards com MSW; (4) E2E — fatia pequena (~12–15 jornadas P0) entre Dashboard, API e PWA. A base <code>UNIT-*</code> está <b>implementada (48/48)</b> no monorepo; Pactum cobre o contrato HTTP; faltam componente e E2E no produto.</p>
   <pre class="ascii">
                         ╱╲
-                       ╱  ╲          E2E · Playwright              ~30
-                      ╱____╲         jornadas entre Dashboard, API e app
+                       ╱  ╲          E2E · Playwright              ~5–8%
+                      ╱____╲         jornadas cross-app (P0)
                      ╱      ╲
-                    ╱        ╲       Integração · Jest + supertest  ~155
-                   ╱__________╲      contrato das rotas /dashboard/**
+                    ╱        ╲       Componente · RTL+MSW         ~10%
+                   ╱__________╲      painéis / wizards UI-only
                   ╱            ╲
-                 ╱              ╲    Unitário · Vitest / Jest         46
-                ╱________________╲   UNIT-* deste documento: aritmética de
-                                     janelas, distribuição, validadores,
-                                     predicados de permissão, formatação
+                 ╱              ╲    Integração · Jest + Pactum   ~35–40%
+                ╱________________╲   HTTP + Postgres + contrato
+               ╱                  ╲
+              ╱                    ╲ Unitário · Vitest / Jest      ~45–50%
+             ╱______________________╲ UNIT-* + *.pure.ts + lib/
   </pre>
   <div class="tablewrap">
   <table>
@@ -1572,18 +1776,18 @@ footer{border-top:1px solid var(--rule);padding-top:20px;color:var(--ink-3);font
     <tbody>
       <tr>
         <td class="dim">Unitário</td><td>Jest (API) e Vitest (front)</td>
-        <td>Os 46 casos <code>UNIT-*</code> deste documento, um por função: grade de horários, sobreposição de bloqueio, saldo de crédito, distribuição sequencial de grupos, validação de resposta, predicado de dado sensível, guarda de upload, normalização de e-mail e cor, conversão de preço em centavos, cálculo do "há X minutos". Funções puras, sem banco e sem HTTP.</td>
-        <td><code>__tests__/unit/api/dashboard/&lt;modulo&gt;/*.spec.ts</code> e <code>__tests__/unit/front/dashboard/&lt;modulo&gt;/*.test.ts</code>, na raiz do monorepo — ver <code>__tests__/README.md</code>. A lógica pura do front vive em <code>apps/dashboard/lib/</code>, extraída como no <code>apps/admin</code>. <b>A extração exigida pelos casos marcados <span class="pill warn">extrair</span> foi concluída</b>; a contagem viva está em <code>docs/plans/mapa-casos-unit.md</code>.</td>
+        <td>Os <b>48</b> casos <code>UNIT-*</code> ativos (ex-<code>UNIT-MN-03</code> removido no ADR-002): grade de horários, grupos, LGPD, formatação, menu/analytics tabs, etc.</td>
+        <td><code>dev.CrossHub/__tests__/unit/</code> — ver <code>__tests__/README.md</code> e <code>docs/plans/mapa-casos-unit.md</code>. Front: <code>apps/dashboard/lib/</code>.</td>
       </tr>
       <tr>
         <td class="dim">Integração / API</td><td>Jest + supertest + Postgres</td>
         <td>Todos os casos <code>API-*</code> deste documento. É a camada que prova regra de negócio, permissão e isolamento de tenant — as três coisas que mais custam caro se falharem.</td>
-        <td><code>__tests__/integration/api/dashboard/&lt;modulo&gt;.integration.spec.ts</code>, um por módulo, sobre o padrão de <code>__tests__/integration/api/admin/contrato-admin.integration.spec.ts</code>.</td>
+        <td><code>dev.CrossHub/__tests__/integration/api/**</code> (Jest+supertest) + specs Pactum neste repo (<code>*/tests/functional/*-F.test.ts</code>).</td>
       </tr>
       <tr>
         <td class="dim">Componente</td><td>Vitest + RTL + MSW</td>
         <td>Os quatro painéis extraídos nesta branch, com a API mockada. É a rede de proteção mais barata para a refatoração em curso — e a que falta hoje.</td>
-        <td><code>__tests__/component/dashboard/&lt;modulo&gt;/*.test.tsx</code> — a criar, espelhando <code>__tests__/component/admin/</code> e o <code>apps/admin/vitest.config.mts</code>.</td>
+        <td><code>dev.CrossHub/__tests__/component/dashboard/&lt;modulo&gt;/*.test.tsx</code> — a criar (Vitest jsdom + RTL + MSW).</td>
       </tr>
       <tr>
         <td class="dim">E2E</td><td>Playwright</td>
@@ -1596,31 +1800,37 @@ footer{border-top:1px solid var(--rule);padding-top:20px;color:var(--ink-3);font
 </section>
 
 <section>
-  <h2 id="sequencia">14. Sequência de implantação</h2>
+  <h2 id="sequencia">14. Próximos passos (pós-Pactum)</h2>
+  <p class="note">A suíte Pactum já cobre <b>174/178</b> casos de API — ver <a href="#status-execucao">status</a>. A sequência abaixo é o que falta para homologação de UI e alinhamento pós-pivot, não reimplementação dos P0 de Agendamentos/LGPD na API.</p>
   <div class="tablewrap">
   <table>
     <thead><tr><th>Etapa</th><th>Entrega</th><th>Por que nesta ordem</th></tr></thead>
     <tbody>
       <tr>
-        <td class="dim">Semana 1<br><span class="pill fail">bloqueia o merge</span></td>
-        <td>Playwright instalado e configurado · fábrica de tenant de teste com os dois papéis · <code>E2E-REG-01</code> cobrindo os quatro painéis extraídos · testes de componente dos mesmos quatro painéis · os P0 de Agendamentos (<code>API-AG-01</code>, <code>-02</code>, <code>-07</code>, <code>-16</code>, <code>-22</code>) e de LGPD (<code>API-LGPD-04</code> a <code>-07</code>) · <b>os unitários que não dependem de extração</b> (<code>UNIT-AG-04</code> a <code>-08</code>, <code>UNIT-F-01</code> a <code>-04</code>, <code>UNIT-G-01</code>, <code>-03</code>, <code>UNIT-C-01</code>, <code>-02</code>, <code>UNIT-CAT-01</code>, <code>UNIT-BN-01</code>)</td>
-        <td>Os unitários listados são chamáveis <b>hoje</b>, sem tocar em código de produção — é a única cobertura que entra sem custo de refatoração e a primeira a rodar em cada <code>push</code>. A branch atual reorganizou milhares de linhas do console sem nenhuma proteção. Antes de qualquer cobertura nova, é preciso garantir que o que já existia continua funcionando. Em paralelo, os dois módulos de maior risco entram com o mínimo indispensável.</td>
+        <td class="dim">1 · Imediato<br><span class="pill warn">rápido</span></td>
+        <td><code>AG-30-F.test.ts</code> · checklist <a href="#pivot-libre">Pivot Libre</a> (openapi, tenants, geradores) · <code>npm run generate:map</code> verde</td>
+        <td>Fecha o único caso API “ausente” automatizável e remove drift de contrato após ADR-002.</td>
       </tr>
       <tr>
-        <td class="dim">Semana 2</td>
-        <td>Suíte completa de Agendamentos e LGPD · P0 de Clientes, Formulários e Grupos · <code>E2E-CORE-01</code>, <code>E2E-C-01</code>, <code>E2E-F-01</code> · <b>as extrações que destravam os unitários P0</b>: <code>generateSlots</code>, <code>homeWindows</code>, o predicado único de <code>canViewSensitiveData</code> e a constante da mensagem literal</td>
-        <td>Fecha o núcleo do produto. Ao fim desta etapa, todo caminho crítico tem ao menos um teste.</td>
+        <td class="dim">2 · Bloqueia merge de UI<br><span class="pill fail">P0</span></td>
+        <td>Playwright + fábrica de tenant (Principal + admin comum) · <code>E2E-REG-01</code> · testes de componente dos quatro painéis extraídos</td>
+        <td>Console com rota única <code>/</code> — regressão visual/comportamental sem isso é manual.</td>
       </tr>
       <tr>
-        <td class="dim">Semana 3</td>
-        <td>Catálogo, Marca, Banners, Home, Menu e Anonimização · unitários P1 e P2 restantes, com as extrações que faltam · casos P1 e P2 pendentes · casos de volume (<code>API-C-16</code> e equivalentes) · integração ao CI</td>
-        <td>Completa a cobertura e transforma a suíte em portão automático de merge, em vez de exercício pontual.</td>
+        <td class="dim">3 · E2E núcleo<br><span class="pill fail">P0</span></td>
+        <td>Smokes <code>E2E-MN-01</code>, <code>E2E-AG-01</code>, <code>E2E-F-01</code>, <code>E2E-C-01</code> · controle de relógio para prazos de 24 h e retenção</td>
+        <td>Jornadas que a API sozinha não prova (estado React, mensagens na tela).</td>
+      </tr>
+      <tr>
+        <td class="dim">4 · Cobertura de contrato<br><span class="pill info">P2</span></td>
+        <td>Novos casos para pagamentos/refunds/edition de agenda · P1/P2 restantes · casos de volume</td>
+        <td>Lacunas listadas em <a href="#cobertura">§12</a> — dinheiro e edição distinta de remarcação.</td>
       </tr>
     </tbody>
   </table>
   </div>
   <div class="callout">
-    <h4>Quatro decisões que precisam do time antes da Semana 1</h4>
+    <h4>Quatro decisões que ainda precisam do time</h4>
     <ul>
       <li><b>A inconsistência do roteiro de Agendamentos.</b> A §11 da especificação manda cobrir só AG-01 a AG-18, deixando feriados e modos de seleção de profissional (AG-19 a AG-25) fora. Esta estratégia os inclui. Confirmar se é omissão ou decisão.</li>
       <li><b>Os gaps de numeração.</b> C-10 não existe na especificação de Clientes e F-15 está fora de ordem em Formulários. Confirmar se havia um caso ali antes de considerar a rastreabilidade fechada.</li>
@@ -1635,7 +1845,7 @@ footer{border-top:1px solid var(--rule);padding-top:20px;color:var(--ink-3);font
   <p class="note">Condições para considerar o Dashboard homologado. Não são metas de cobertura percentual — são afirmações verificáveis.</p>
   <ol>
     <li><b><code>E2E-REG-01</code> verde antes do merge da branch atual.</b> Os quatro painéis extraídos renderizam com os tokens da biblioteca e sem propriedade quebrada. Este item é pré-condição, não critério final.</li>
-    <li><b>A camada unitária existe e roda sozinha.</b> Os 46 casos <code>UNIT-*</code> executam sem banco, sem rede e sem subir o Nest, em um comando separado do de integração. Uma suíte unitária que precisa de Postgres não é unitária — é integração com outro nome, e perde a única vantagem que justifica a camada.</li>
+    <li><b>A camada unitária existe e roda sozinha.</b> Os <b>48</b> casos <code>UNIT-*</code> executam sem banco, sem rede e sem subir o Nest, em um comando separado do de integração. Uma suíte unitária que precisa de Postgres não é unitária — é integração com outro nome, e perde a única vantagem que justifica a camada.</li>
     <li><b>100% dos casos P0 executados e verdes</b>, nas três camadas. Um P0 vermelho é bloqueio; não há exceção negociada por prazo.</li>
     <li><b>Zero vazamento entre tenants.</b> O caso <code>API-&lt;MOD&gt;-XT</code> de cada um dos onze módulos passou, incluindo a variante que ignora a interface e chama a rota direto.</li>
     <li><b>As mensagens literais conferidas caractere a caractere</b> — as duas de LGPD e as três de Agendamentos. A conferência acontece na camada unitária, sobre a constante exportada (<code>UNIT-LGPD-03</code>, <code>UNIT-CAT-01</code>); a de API confere que a mensagem chegou no corpo da resposta. Aproximação não conta em nenhuma das duas.</li>
@@ -1651,6 +1861,100 @@ footer{border-top:1px solid var(--rule);padding-top:20px;color:var(--ink-3);font
     <p>Cobertura percentual de linhas. Uma suíte com 80% de cobertura que não prova isolamento de tenant vale menos que quinze casos que provam. Os critérios acima são afirmações sobre comportamento, e é assim que devem ser reportados.</p>
   </div>
 </section>
+
+<section id="apendice">
+  <h2>Apêndice — método e priorização</h2>
+  <p class="note">Material de referência para quem escreve ou revisa casos. O dia a dia de execução está em <a href="#status-execucao">Pronto · Resolver · Bloqueado</a>.</p>
+
+  <h3 id="apendice-metodo">Como ler este documento</h3>
+  <p class="note">Duas heurísticas de James Bach, usadas para responder perguntas diferentes. Elas não competem — a primeira gera a lista, a segunda ordena a lista.</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Heurística</th><th>Pergunta que responde</th><th>Dimensões</th><th>Onde aparece aqui</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="dim">SFDPOT</td>
+        <td><b>O que testar?</b> Varre o produto por ângulos independentes para que nenhuma classe de risco passe despercebida.</td>
+        <td><i>Structure</i> (estrutura) · <i>Function</i> (função) · <i>Data</i> (dados) · <i>Platform</i> (plataforma) · <i>Operations</i> (operação) · <i>Time</i> (tempo)</td>
+        <td>Uma tabela de seis linhas por módulo</td>
+      </tr>
+      <tr>
+        <td class="dim">RCRCRC</td>
+        <td><b>Em que ordem testar?</b> Prioriza regressão quando não há tempo nem cobertura para rodar tudo.</td>
+        <td><i>Recent</i> (recente) · <i>Core</i> (essencial) · <i>Risky</i> (arriscado) · <i>Configuration-sensitive</i> (sensível a configuração) · <i>Conformance</i> (conformidade) · <i>Complex</i> (complexo)</td>
+        <td>Tabela global (<a href="#apendice-rcrcrc">abaixo</a>) e uma por módulo</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout plain">
+    <h4>Convenções das tabelas de casos</h4>
+    <ul>
+      <li><b>Prioridade.</b> <span class="pill fail">P0</span> bloqueia o release — regra de negócio, dinheiro, permissão ou isolamento de tenant. <span class="pill warn">P1</span> degrada a operação sem impedi-la. <span class="pill info">P2</span> é polimento e conveniência.</li>
+      <li><b>Camada.</b> Cada caso carrega a etiqueta da camada em que deve ser implementado. <span class="pill unit">UNIT</span> é teste de método — função pura, sem banco e sem HTTP, escrito junto do código que ele prova. <span class="pill api">API</span> é teste funcional no endpoint, com banco real e token de verdade. <span class="pill e2e">E2E</span> é o que será automatizado pela interface, atravessando Dashboard, API e app do cliente. A etiqueta não é sugestão: um caso etiquetado UNIT que só existe como teste de API custa segundos a mais por execução e não aponta a linha que quebrou.</li>
+      <li><b>IDs.</b> <code>UNIT-&lt;MOD&gt;-nn</code> para teste de método, <code>API-&lt;MOD&gt;-nn</code> para contrato de API e <code>E2E-&lt;MOD&gt;-nn</code> para jornada de ponta a ponta. A coluna <b>Relação</b> das tabelas unitárias aponta o caso de API que aquele teste de método sustenta — os dois não se substituem: o unitário prova a aritmética, o de API prova que ela chegou na resposta. A coluna <b>Doc</b> rastreia o ID de QA que já existe na especificação do módulo (<code>AG-15</code>, <code>F-14</code>, <code>C-11</code>…), para que este documento não crie uma numeração paralela.</li>
+      <li><b>Rastreabilidade.</b> Todo caso P0 nasce de uma regra escrita em <code>docs/dash/</code>. Quando o caso é novo — descoberto pela heurística e não previsto na doc — ele aparece marcado <span class="pill info">novo</span>.</li>
+      <li><b>Rota.</b> O caminho literal do contrato OpenAPI, com os <i>path params</i> entre chaves: <code>POST /dashboard/appointments/{id}/reschedule</code>. Nunca abreviado com <code>.../</code> nem com <code>:id</code> — é por esta string que a automação casa o caso com o endpoint, e abreviar quebra o casamento. Quando o caso precisa de arranjo, as rotas de preparação aparecem em <b>cinza abaixo da rota sob teste</b>: só a de cima é o alvo da asserção. Todas foram conferidas contra o <code>docs-json</code>; nos casos <code>API-AN-01</code> e <code>-02</code> a conferência é invertida, porque o ponto deles é a rota <b>não</b> existir.</li>
+      <li><b>Token.</b> Qual login usar no <code>before</code>, lido do <code>security</code> da própria rota: <span class="pill tenant">tenantAuth</span> é o administrador da organização, <span class="pill enduser">endUserAuth</span> é o usuário final do app e <span class="pill aberta">aberta</span> é rota sem autenticação — o <code>platformAuth</code> do Super Admin saiu com o ADR-002. Onde a mesma regra vale diferente para os dois perfis — o prazo de cancelamento em <code>API-AG-19</code> e <code>-20</code>, por exemplo — os casos estão separados, um por audiência.</li>
+      <li><b>Status.</b> O código HTTP esperado, para ir direto em <code>paramsDefault.statusCode</code> sem inferir do texto. <code>201 / 409</code> significa que o caso dispara duas requisições e espera um de cada. Todo código listado foi conferido contra os que a rota declara no contrato.</li>
+      <li><b>Asserção.</b> A mensagem ou o campo que <i>prova</i> o caso — <i>"Horário indisponível."</i>, <code>occupied == capacity</code>, <code>rescheduled_from_id != null</code>. Onde antes se lia "400 com o campo inválido identificado", agora está escrito qual campo e qual mensagem.</li>
+    </ul>
+  </div>
+
+  <h3 id="apendice-rcrcrc">Priorização global — RCRCRC</h3>
+  <p class="note">As áreas que pontuam em cada dimensão, com a evidência que sustenta a classificação. O histórico de commits e a contagem de alterações por diretório foram consultados diretamente no repositório.</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Dimensão</th><th>Áreas do dashboard</th><th>Evidência</th><th>Peso</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="dim">Recent</td>
+        <td>Pivot ADR-002 · Analytics · App web</td>
+        <td>Remoção de <code>apps/admin</code>, paywall e <code>RequiresModuleGuard</code>; módulo <code>/dashboard/analytics/*</code>; app Libre em <code>apps/web</code> sem slug no path; consolidação de env e seed <code>db:seed:libre</code>.</td>
+        <td><span class="pill fail">Alto</span></td>
+      </tr>
+      <tr>
+        <td class="dim">Core</td>
+        <td>Login do tenant → Home → Clientes → Formulários</td>
+        <td>Sem essa linha o produto não entrega nada: é como o tenant cadastra quem atende e coleta informação. <code>apps/api/src/people</code> e <code>src/auth</code> lideram o histórico com 11 commits cada.</td>
+        <td><span class="pill fail">Alto</span></td>
+      </tr>
+      <tr>
+        <td class="dim">Risky</td>
+        <td>Agendamentos · LGPD · isolamento de tenant</td>
+        <td>Agendamentos concentra o único tratamento explícito de concorrência do produto (advisory lock por <code>tenant + serviço + profissional + início</code>) e uma máquina de sete estados. LGPD decide quem lê dado sensível, com <code>403</code> e <code>409</code> exigidos por contrato. Falha de RLS vaza dado entre clientes.</td>
+        <td><span class="pill fail">Alto</span></td>
+      </tr>
+      <tr>
+        <td class="dim">Configuration-sensitive</td>
+        <td>Agendamentos · Formulários · Banners · Catálogo</td>
+        <td><code>approval_mode</code>, <code>professional_selection_mode</code>, <code>audience_mode</code>, <code>submission_mode</code>, retenção de 1 a 3650 dias, carrossel (intervalo, altura, indicadores), variáveis Libre (<code>LIBRE_TENANT_SLUG</code>) e e-mail Resend (<code>contact_email</code> + <code>RESEND_API_KEY</code> + <code>EMAIL_FROM</code>).</td>
+        <td><span class="pill warn">Médio</span></td>
+      </tr>
+      <tr>
+        <td class="dim">Conformance</td>
+        <td>LGPD · Agendamentos · contrato Swagger</td>
+        <td>As especificações exigem <b>mensagens literais</b> ("Você não possui a permissão para visualizar respostas sensíveis.", "Para realizar outro agendamento neste dia, entre em contato com a administração.", "Horário indisponível."). O contrato publicado em <code>/docs-json</code> precisa bater com as rotas reais.</td>
+        <td><span class="pill warn">Médio</span></td>
+      </tr>
+      <tr>
+        <td class="dim">Complex</td>
+        <td>Agendamentos · wizard de Grupos · wizard de Formulários</td>
+        <td>Agendamentos é a especificação mais extensa de <code>docs/dash/</code>. O wizard de Grupos tem distribuição sequencial com <b>descarte silencioso de excedente</b>. O de Formulários tem quatro passos e substituição integral do conjunto de perguntas.</td>
+        <td><span class="pill warn">Médio</span></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout">
+    <h4>Cruzamento das dimensões</h4>
+    <p><b>Agendamentos pontua em quatro das seis dimensões</b> — Recent, Risky, Configuration-sensitive e Complex — e por isso abre este documento. É onde uma falha custa mais caro: um horário vendido duas vezes é um cliente na porta sem atendimento.</p>
+    <p>O risco <i>imediato</i> de merge de UI continua sendo a <b>regressão dos quatro painéis extraídos do console</b> (Recent × Core) — daí <code>E2E-REG-01</code> e componente como P0 em <a href="#status-execucao">Resolver</a>, mesmo com a API Pactum largely verde.</p>
+    <p><b>Ordem de ataque (regressão):</b> (1) <code>E2E-REG-01</code> + componente; (2) smokes E2E do núcleo; (3) casos P2 de contrato e volume.</p>
+  </div>
+</section>
+
+</div><!-- /report-tab-body -->
 
 <footer>
   <p><i>Bach, J. — <b>Heuristic Test Strategy Model</b> (SFDPOT: Structure, Function, Data, Platform, Operations, Time), Satisfice Inc., 2005.</i></p>

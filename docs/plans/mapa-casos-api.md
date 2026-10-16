@@ -2,7 +2,7 @@
 
 Rastreabilidade entre os **178 casos de API** de `.doc/dashboard/estrategia-testes-dashboard.json` (105 deles P0), os endpoints de `openapi.json` e os services em `core/src/services/`.
 
-Estratégia gerada em 2026-10-15 · mapa gerado por `npm run generate:map` — não editar à mão.
+Estratégia gerada em 2026-10-16 · mapa gerado por `npm run generate:map` — não editar à mão.
 
 | Convenção | Valor |
 |---|---|
@@ -48,7 +48,7 @@ Domínio: `appointments/` · casos: 38 (P0: 21)
 | `API-AG-27` | P1 | Feriado é visual, não bloqueia | `tenantAuth` | 200 | `getCalendar` | `getAvailability` | — | `AG-27-F.test.ts` | — |
 | `API-AG-28` | P2 | Feriado móvel | `tenantAuth` | 200 | `getCalendar` | — | — | `AG-28-F.test.ts` | — |
 | `API-AG-29` | P1 | Exclusão de profissional com histórico | `tenantAuth` | 409 | `deleteProfessional` | `postCreateAppointment` | `Este profissional possui agendamentos e não pode ser excluído. Inative-o para preservar o histórico.` | `AG-29-F.test.ts` | — |
-| `API-AG-30` | P2 | Gate do add-on de indicadores — substituído por API-ANL-03 : a rota saiu do contrato e o add-on appointment_analytics virou analytics | — | 404 | `GET /dashboard/appointments/analytics` *(não existe no contrato)* | — | — | coberto por `API-ANL-03` | — |
+| `API-AG-30` | P2 | Rota legada de indicadores na agenda — ausente do contrato | `tenantAuth` | 404 | `GET /dashboard/appointments/analytics` *(não existe no contrato)* | — | — | `AG-30-F.test.ts` | — |
 | `API-AG-31` | P0 | Crédito de pacote — venda e consumo | `tenantAuth` | 200 | `getPackageLedger` | `postCreatePackage`<br>`postSellPackage`<br>`postCreateAppointment` | — | `AG-31-F.test.ts` | — |
 | `API-AG-31b` | P0 | Crédito de pacote — cancelamento e restauração excepcional | `tenantAuth` | 200 | `postExceptionalRestore` | `putSaveSettings`<br>`patchUpdateAppointmentStatus` | `Devolução excepcional:` | `AG-31b-F.test.ts` | — |
 | `API-AG-32` | P0 | Notas internas não vazam para o app | `endUserAuth` | 200 | `getPublicMyAppointments` | `postCreateAppointment`<br>`postCreateBlock` | — | `AG-32-F.test.ts` | — |
@@ -299,9 +299,9 @@ Nenhum. Todo arquivo no disco corresponde a um caso da estratégia.
 
 ## Cobertura do contrato
 
-Rotas citadas por algum caso: **93** de 127 do contrato.
+Rotas citadas por algum caso: **93** de 129 do contrato.
 
-### Rotas `/dashboard/**` sem nenhum caso de API (22 de 101)
+### Rotas `/dashboard/**` sem nenhum caso de API (24 de 103)
 
 - `DELETE /dashboard/appointments/blocks/{id}` → `appointments/deleteBlock`
 - `DELETE /dashboard/forms/{id}` → `forms/deleteForm`
@@ -317,11 +317,13 @@ Rotas citadas por algum caso: **93** de 127 do contrato.
 - `GET /dashboard/categories` → `catalog/getCategories`
 - `GET /dashboard/privacy/settings` → `privacy/getSettings`
 - `GET /dashboard/reservations` → `catalog/getReservations`
+- `GET /dashboard/settings/contacts` → `dashboard/getContacts`
 - `PATCH /dashboard/appointments/professionals/{id}` → `appointments/patchUpdateProfessional`
 - `PATCH /dashboard/appointments/services/{id}` → `appointments/patchUpdateService`
 - `PATCH /dashboard/appointments/{id}/edit` → `appointments/patchEditAppointment`
 - `PATCH /dashboard/appointments/{id}/financial` → `appointments/patchAdjustFinancial`
 - `PATCH /dashboard/categories/{id}` → `catalog/patchUpdateCategory`
 - `PATCH /dashboard/forms/{id}` → `forms/patchUpdateForm`
+- `PATCH /dashboard/settings/contacts` → `dashboard/patchUpdateContacts`
 - `POST /dashboard/appointments/{id}/payments` → `appointments/postRegisterPayment`
 - `POST /dashboard/appointments/{id}/refunds` → `appointments/postRefundPayment`
