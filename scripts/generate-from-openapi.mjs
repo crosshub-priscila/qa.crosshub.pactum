@@ -34,10 +34,6 @@ const schemas = spec.components.schemas
 
 /** Tag do OpenAPI -> pasta de domínio do projeto. */
 const TAG_TO_DOMAIN = {
-	"Admin · Add-ons": "addons",
-	"Admin · Faturamento": "billing",
-	"Admin · Organizações": "tenants",
-	"Admin · Planos": "plans",
 	Agendamentos: "appointments",
 	Arquivos: "assets",
 	Auditoria: "audit",
@@ -67,30 +63,10 @@ const SCHEMA_ALIASES = { ApiErrorResponse: "IApiError" }
 const NAME_OVERRIDES = {
 	"get /health": "getHealth",
 
-	"post /auth/platform/login": "postPlatformLogin",
-
-	"get /admin/add-ons": "getListAddOns",
-	"get /admin/add-ons/tenants/{tenantId}": "getTenantAddOns",
-	"put /admin/add-ons/tenants/{tenantId}": "putSaveTenantAddOns",
-	"get /admin/add-ons/tenants/{tenantId}/interests": "getTenantAddOnInterests",
-	"get /admin/billing/summary": "getBillingSummary",
-
-	"get /admin/plans": "getListPlans",
-	"post /admin/plans": "postCreatePlan",
-	"patch /admin/plans/{id}": "patchUpdatePlan",
-	"patch /admin/plans/{id}/status": "patchPlanStatus",
-	"get /admin/plans/{id}/tenants": "getPlanTenants",
-
-	"get /admin/tenants": "getListTenants",
-	"post /admin/tenants": "postCreateTenant",
-	"patch /admin/tenants/{id}": "patchUpdateTenant",
-
 	"get /dashboard/analytics/appointments": "getAppointmentsAnalytics",
 	"get /dashboard/analytics/appointments/export": "getAppointmentsAnalyticsExport",
 	"get /dashboard/analytics/customers": "getCustomersAnalytics",
 	"get /dashboard/analytics/customers/export": "getCustomersAnalyticsExport",
-	"post /dashboard/analytics/interest": "postRequestAnalyticsInterest",
-	"get /dashboard/analytics/interest": "getPendingAnalyticsInterest",
 
 	"get /dashboard/appointments": "getListAppointments",
 	"post /dashboard/appointments": "postCreateAppointment",
@@ -158,6 +134,8 @@ const PRESERVED = new Set([
 	"core/src/services/people/postCreatePersonRace.service.ts",
 	// Rotas de anonimização que não existem de propósito, ver caso AN-01.
 	"core/src/services/privacy/postAnonymizationRequest.service.ts",
+	// Rota legada de indicadores na agenda — ver caso AG-30.
+	"core/src/services/appointments/getLegacyAppointmentsAnalytics.service.ts",
 ])
 
 const apiData = readFileSync(

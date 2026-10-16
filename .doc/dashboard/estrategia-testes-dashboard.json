@@ -1,5 +1,5 @@
 {
-  "gerado": "2026-10-15",
+  "gerado": "2026-10-16",
   "origem": ".doc/dashboard/estrategia-testes-dashboard.html",
   "aviso": "Artefato de build. Editar o HTML e rodar build-strategy-json.mjs.",
   "totais": {
@@ -20,7 +20,7 @@
       "ANL": 5
     },
     "unit": {
-      "casos": 49,
+      "casos": 48,
       "p0": 25,
       "extrair": 0,
       "porModulo": {
@@ -33,14 +33,14 @@
         "CAT": 3,
         "MK": 3,
         "BN": 3,
-        "MN": 3
+        "MN": 2
       }
     }
   },
   "conferencia": {
-    "contrato": 127,
+    "contrato": 129,
     "comCaso": 93,
-    "semCaso": 34
+    "semCaso": 36
   },
   "casos": [
     {
@@ -1121,7 +1121,7 @@
       "moduloNome": "Agendamentos",
       "camada": "API",
       "prioridade": "P2",
-      "cenario": "Gate do add-on de indicadores — substituído por API-ANL-03 : a rota saiu do contrato e o add-on appointment_analytics virou analytics",
+      "cenario": "Rota legada de indicadores na agenda — ausente do contrato",
       "naoVerificavel": null,
       "rotas": [
         {
@@ -1130,16 +1130,17 @@
           "caminho": "/dashboard/appointments/analytics"
         }
       ],
-      "token": null,
+      "token": "tenantAuth",
       "status": [
         404
       ],
-      "precondicao": "Tenant qualquer",
-      "assercao": "A rota antiga não existe mais; o gate do add-on é verificado nas rotas /dashboard/analytics/* pelo caso API-ANL-03",
+      "precondicao": "Qualquer admin autenticado",
+      "assercao": "404 — indicadores vivem em /dashboard/analytics/* ( API-ANL-03b em diante), sem 403 de add-on (ADR-002)",
       "literais": [],
       "campos": [
+        "404",
         "/dashboard/analytics/*",
-        "API-ANL-03"
+        "API-ANL-03b"
       ],
       "doc": "—",
       "novo": false
@@ -1316,7 +1317,7 @@
       "status": [
         201
       ],
-      "precondicao": "Add-on Analytics ativo; pessoa nova e pacote criados no caso; uma venda sem pagamento e outra com paymentAmountCents igual ao preço",
+      "precondicao": "Tenant com seed normal; pessoa nova e pacote criados no caso; uma venda sem pagamento e outra com paymentAmountCents igual ao preço",
       "assercao": "Sem pagamento: resumo com outstandingCents igual ao preço, receivedCents 0 e contrato com paidCents 0 e a pessoa em outstanding[] do Analytics com packagesCents igual ao preço. Pagamento parcial pelo contrato: 201 com paidCents / outstandingCents e resumo abatido; acima do saldo, 409 \"O pagamento excede o saldo em aberto.\" . Venda paga: paidCents igual ao preço; valor sem paymentMethod , 400 \"Informe a forma de pagamento.\"",
       "literais": [
         "O pagamento excede o saldo em aberto.",
@@ -7600,28 +7601,20 @@
       "moduloNome": "Menu e navegação",
       "camada": "UNIT",
       "prioridade": "P1",
-      "alvo": "tenantAppUrl() → extrair para função pura (webAppUrl, slug) · dashboard-console.tsx:1958",
-      "fontes": [
-        {
-          "arquivo": "dashboard-console.tsx",
-          "linhas": [
-            1958
-          ],
-          "bruto": "1958"
-        }
-      ],
+      "alvo": "tenantAppUrl(webAppUrl) · apps/dashboard/lib/tenant-app-url.ts",
+      "fontes": [],
       "funcoes": [
         "tenantAppUrl"
       ],
       "codigos": [
-        "(webAppUrl, slug)"
+        "apps/dashboard/lib/tenant-app-url.ts"
       ],
-      "superficie": "front",
+      "superficie": null,
       "extrair": false,
-      "prova": "Slug ausente devolve null (e é isso que dispara a mensagem de erro, não uma URL quebrada); barra final da base é removida antes de concatenar; slug com espaço.",
+      "prova": "Produto cliente único: devolve a base do PWA sem /{slug} ; remove barra final.",
       "literais": [],
       "campos": [
-        "null"
+        "/{slug}"
       ],
       "relacao": [
         "E2E-MN-04"
@@ -7635,54 +7628,29 @@
       "moduloNome": "Menu e navegação",
       "camada": "UNIT",
       "prioridade": "P1",
-      "alvo": "derivação das abas de Agendamentos a partir da sessão",
-      "fontes": [],
-      "funcoes": [],
-      "codigos": [],
-      "superficie": null,
-      "extrair": false,
-      "prova": "As abas de Agendamentos não dependem de canViewSensitiveData : a lista é a mesma para qualquer tenant_admin da organização que tem o módulo habilitado. O que esconde item de menu é o módulo em enabledModules , e isso é o UNIT-MN-03 . O ADR-004 continua valendo nos dois casos: \"visibilidade de interface não é controle de segurança e não impede chamadas diretas às rotas\" — a fronteira é a API, que responde 403 a quem não tem o módulo.",
-      "literais": [
-        "item de menu",
-        "visibilidade de interface não é controle de segurança e não impede chamadas diretas às rotas"
+      "alvo": "appointmentsTabs() · analyticsTabs() · navigation.ts",
+      "fontes": [
+        {
+          "arquivo": "navigation.ts",
+          "linhas": [],
+          "bruto": null
+        }
       ],
+      "funcoes": [
+        "appointmentsTabs",
+        "analyticsTabs"
+      ],
+      "codigos": [],
+      "superficie": "api",
+      "extrair": false,
+      "prova": "Sete abas de Agendamentos e duas de Analytics sempre visíveis ( AN-04 ). Ex- UNIT-MN-03 (gating por módulo) removido — ADR-002.",
+      "literais": [],
       "campos": [
-        "canViewSensitiveData",
-        "tenant_admin",
-        "enabledModules",
-        "403"
+        "UNIT-MN-03"
       ],
       "relacao": [
         "API-MN-03"
       ],
-      "relacaoNota": null,
-      "naoVerificavel": null
-    },
-    {
-      "id": "UNIT-MN-03",
-      "modulo": "MN",
-      "moduloNome": "Menu e navegação",
-      "camada": "UNIT",
-      "prioridade": "P1",
-      "alvo": "hasModule() e showsContentGroup() · apps/dashboard/lib/navigation.ts",
-      "fontes": [],
-      "funcoes": [
-        "hasModule",
-        "showsContentGroup"
-      ],
-      "codigos": [
-        "apps/dashboard/lib/navigation.ts"
-      ],
-      "superficie": null,
-      "extrair": false,
-      "prova": "O item só aparece se o módulo está em enabledModules da sessão. Depois do ADR-002 essa lista é configuração fixa da organização , não consequência de plano contratado — o RequiresModuleGuard continua sendo a fronteira. Lista ausente mostra tudo — um contrato antigo, sem o campo, não pode apagar o menu inteiro; lista presente vale , inclusive vazia. O grupo CONTEÚDO some quando nenhum item dele sobra. Segurança segue na API ( 403 ).",
-      "literais": [],
-      "campos": [
-        "enabledModules",
-        "RequiresModuleGuard",
-        "403"
-      ],
-      "relacao": [],
       "relacaoNota": null,
       "naoVerificavel": null
     }

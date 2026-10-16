@@ -78,4 +78,10 @@ export const calendarAG28 = {
 	],
 }
 
-/** `API-AG-30` — gate do add-on de indicadores. */
+/** `API-AG-30` — rota legada GET /dashboard/appointments/analytics deve responder 404. */
+export const calendarAG30 = {
+	...calendarDefaults,
+	casePrefix: "[AG-30]",
+	paramsDefault404: (token?: string) =>
+		preSetup.preSetupParamsDefault(404, 5, 500, token),
+}

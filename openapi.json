@@ -4684,6 +4684,98 @@
         ]
       }
     },
+    "/dashboard/settings/contacts": {
+      "get": {
+        "operationId": "DashboardController_contacts",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantContactsDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente, expirado ou inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "tenantAuth": []
+          }
+        ],
+        "summary": "E-mail e telefone de contato da organização (notificações operacionais)",
+        "tags": [
+          "Dashboard"
+        ]
+      },
+      "patch": {
+        "operationId": "DashboardController_updateContacts",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTenantContactsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantContactsDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Payload inválido ou regra de negócio violada.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token ausente, expirado ou inválido.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "tenantAuth": []
+          }
+        ],
+        "summary": "Atualiza os contatos da organização",
+        "tags": [
+          "Dashboard"
+        ]
+      }
+    },
     "/dashboard/people": {
       "get": {
         "description": "Inclui o status do código de acesso mais recente de cada pessoa. Com `page` ou `pageSize` a resposta vem paginada no envelope `PersonPageDto`; sem os dois, devolve o array inteiro (compatibilidade).",
@@ -12445,33 +12537,13 @@
             "type": "string",
             "nullable": true,
             "description": "Nulo enquanto o administrador não preenche o cadastro."
-          },
-          "enabledModules": {
-            "type": "array",
-            "description": "Módulos habilitados para a organização. Governam quais abas o Analytics mostra.",
-            "items": {
-              "type": "string",
-              "enum": [
-                "branding",
-                "banners",
-                "people",
-                "access_codes",
-                "appointments",
-                "appointment_packages",
-                "shop",
-                "forms",
-                "groups",
-                "privacy"
-              ]
-            }
           }
         },
         "required": [
           "email",
           "tenantId",
           "role",
-          "name",
-          "enabledModules"
+          "name"
         ]
       },
       "HomePeriodsDto": {
@@ -12819,6 +12891,39 @@
           "alerts",
           "activities"
         ]
+      },
+      "TenantContactsDto": {
+        "type": "object",
+        "properties": {
+          "contactEmail": {
+            "type": "string",
+            "nullable": true,
+            "format": "email",
+            "description": "Recebe notificações de reserva do catálogo."
+          },
+          "contactPhone": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "contactEmail",
+          "contactPhone"
+        ]
+      },
+      "UpdateTenantContactsDto": {
+        "type": "object",
+        "properties": {
+          "contactEmail": {
+            "type": "string",
+            "nullable": true,
+            "format": "email"
+          },
+          "contactPhone": {
+            "type": "string",
+            "nullable": true
+          }
+        }
       },
       "PersonListItemDto": {
         "type": "object",

@@ -57,8 +57,6 @@ const DOMAIN_BY_MODULE = {
 /** Caso cuja verificação vive no arquivo de outro. Espelha `build-case-map.mjs`. */
 const COBERTO_POR = {
 	"API-AN-02": "API-AN-01",
-	// A rota antiga de indicadores saiu do contrato; o gate vive agora em ANL-03.
-	"API-AG-30": "API-ANL-03",
 }
 
 
