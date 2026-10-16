@@ -196,7 +196,7 @@ html{overflow-anchor:none}
     <div><dt>Escopo</dt><dd>Dashboard + API tenant · App via <code>/public/**</code></dd></div>
     <div><dt>Base</dt><dd>staging @ 8257a19</dd></div>
     <div><dt>Fonte</dt><dd>docs/dash/ · ADR-002 · <code>docs/plans/pivot-libre-impacto-testes.md</code></dd></div>
-    <div><dt>Data</dt><dd>15/10/2026</dd></div>
+    <div><dt>Data</dt><dd>16/10/2026</dd></div>
     <div><dt>Autoria</dt><dd>Priscila Caimi</dd></div>
     <div><dt>Método</dt><dd>SFDPOT + RCRCRC (Bach)</dd></div>
   </dl>
@@ -236,20 +236,20 @@ html{overflow-anchor:none}
     <div class="score"><b>11</b><span>módulos</span></div>
     <div class="score ok"><b>48/48</b><span>UNIT-* no monorepo</span></div>
     <div class="score ok"><b>178</b><span>casos de API</span></div>
-    <div class="score warn"><b>174/178</b><span>specs Pactum</span></div>
+    <div class="score ok"><b>175/178</b><span>specs Pactum</span></div>
     <div class="score"><b>31</b><span>jornadas E2E</span></div>
-    <div class="score bad"><b>0</b><span>E2E Playwright</span></div>
+    <div class="score warn"><b>2</b><span>smokes Playwright</span></div>
     <div class="score bad"><b>105</b><span>P0 de API</span></div>
   </div>
   <div class="verdict">
     <strong>Comece por <a href="#status-execucao">Pronto · Resolver · Bloqueado</a>.</strong> O restante deste HTML é especificação de casos e contexto de risco — o status de execução é conferido no disco e regerado em <code>docs/plans/mapa-casos-api.md</code> (<code>npm run generate:map</code>).
-    <p>Unitário e contrato HTTP (Pactum) estão praticamente fechados; faltam camada de componente, Playwright no monorepo e a limpeza pós-<b>ADR-002</b> descrita em <a href="#pivot-libre">Pivot Libre</a>.</p>
+    <p>Pactum fechou os casos automatizáveis (<b>175/178</b>; três bloqueados em <a href="#status-execucao">Bloqueado</a>). No monorepo já existem <code>playwright.config.ts</code>, smokes <code>E2E-MN-01</code> e <code>E2E-AG-01</code> (parcial) e job <code>e2e-smoke</code> no CI — ver <a href="#ambiente-e2e-local">ambiente local E2E</a>. Ainda faltam camada de componente, o restante das 29 jornadas E2E e itens do checklist pós-<b>ADR-002</b> em <a href="#pivot-libre">Pivot Libre</a>.</p>
   </div>
 </section>
 
 <section>
   <h2 id="status-execucao">Pronto · Resolver · Bloqueado</h2>
-  <p class="note">Foto de 15/10/2026. Detalhe por caso: carimbos <code>npm run stamp:strategy</code> nas tabelas abaixo e mapas em <code>docs/plans/</code>.</p>
+  <p class="note">Foto de 16/10/2026. Detalhe por caso: carimbos <code>npm run stamp:strategy</code> nas tabelas abaixo e mapas em <code>docs/plans/</code>.</p>
 
   <h3>Pronto</h3>
   <div class="tablewrap">
@@ -259,8 +259,11 @@ html{overflow-anchor:none}
       <tr><td class="dim">48 casos <code>UNIT-*</code></td><td><span class="pill pass">implementado</span></td><td><code>docs/plans/mapa-casos-unit.md</code> · <code>dev.CrossHub/__tests__/unit/</code></td></tr>
       <tr><td class="dim">178 casos <code>API-*</code> na estratégia</td><td><span class="pill pass">especificado</span></td><td>Tabelas por módulo · <code>estrategia-testes-dashboard.json</code></td></tr>
       <tr><td class="dim">Casamento caso → rota → service</td><td><span class="pill pass">via JSON</span></td><td><code>npm run generate:map</code> · 137 services em <code>core/src/services/</code></td></tr>
-      <tr><td class="dim">Specs Pactum funcionais</td><td><span class="pill pass">174 arquivos</span></td><td><code>*/tests/functional/*-F.test.ts</code></td></tr>
+      <tr><td class="dim">Specs Pactum funcionais</td><td><span class="pill pass">175 arquivos</span></td><td><code>*/tests/functional/*-F.test.ts</code> · incl. <code>AG-30-F.test.ts</code></td></tr>
       <tr><td class="dim">Integração API no monorepo</td><td><span class="pill pass">CI</span></td><td><code>dev.CrossHub/__tests__/integration/</code></td></tr>
+      <tr><td class="dim">Playwright — base E2E</td><td><span class="pill pass">2 smokes</span></td><td><code>dev.CrossHub/playwright.config.ts</code> · <code>__tests__/e2e/</code> · <code>test:e2e</code> · job CI <code>e2e-smoke</code></td></tr>
+      <tr><td class="dim">Ambiente local E2E</td><td><span class="pill pass">documentado</span></td><td>Obsidian <code>Local/E2E Playwright e tenant de testes</code> · Git <code>__tests__/e2e/README.md</code> · scripts <code>e2e-headed-local.sh</code>, <code>kill-dev-ports.sh</code></td></tr>
+      <tr><td class="dim">Tenant <code>auditoria</code> (E2E/CI)</td><td><span class="pill pass">seed</span></td><td><code>apps/api/scripts/seed-audit-env.mjs</code> + <code>AUDIT_*</code> no <code>.env</code> — senha definitiva, slug alinhado a <code>LIBRE_TENANT_SLUG</code></td></tr>
       <tr><td class="dim">Bugs abertos pela automação</td><td><span class="pill pass">nenhum</span></td><td><code>mapa-casos-api.md</code> → Bugs abertos</td></tr>
     </tbody>
   </table>
@@ -271,13 +274,13 @@ html{overflow-anchor:none}
   <table>
     <thead><tr><th>Item</th><th>Prio</th><th>Próximo passo</th></tr></thead>
     <tbody>
-      <tr><td class="dim"><code>API-AG-30</code> — rota legada <code>GET /dashboard/appointments/analytics</code></td><td><span class="pill info">P2</span></td><td>Criar <code>appointments/tests/functional/AG-30-F.test.ts</code> (assertar <code>404</code>). <b>Único caso API sem arquivo.</b></td></tr>
-      <tr><td class="dim">Playwright no monorepo</td><td><span class="pill fail">P0</span></td><td><code>playwright.config.ts</code> + <code>__tests__/e2e/</code> — smokes <code>E2E-MN-01</code>, <code>E2E-AG-01</code></td></tr>
+      <tr><td class="dim">E2E Playwright — expandir</td><td><span class="pill fail">P0</span></td><td>Manter job <code>e2e-smoke</code> verde no CI · concluir cross-app de <code>E2E-AG-01</code> (<code>test.fixme</code>) · demais jornadas da estratégia (29)</td></tr>
+      <tr><td class="dim">CI E2E vs local</td><td><span class="pill warn">P1</span></td><td>Local: um <code>pnpm dev</code> + <code>E2E_RUN=true</code> — ver <a href="#ambiente-e2e-local">§ ambiente local</a>. Evitar duas stacks nas portas 3000/3001/3003.</td></tr>
       <tr><td class="dim">Testes de componente</td><td><span class="pill fail">P0</span></td><td><code>__tests__/component/dashboard/</code> (Vitest + RTL + MSW) nos painéis extraídos</td></tr>
       <tr><td class="dim">Pivot Libre — limpeza</td><td><span class="pill fail">P0</span></td><td>Tenants <code>ANL-*</code> obsoletos · <code>openapi.json</code> de <code>staging</code> · geradores sem <code>/admin/*</code> — ver <a href="#pivot-libre">§1b</a></td></tr>
       <tr><td class="dim">Pré-requisitos de teste (relógio, dois admins)</td><td><span class="pill fail">P0</span></td><td>Seção <a href="#situacao">1.3</a> — fake timers / fábrica Principal + admin comum</td></tr>
       <tr><td class="dim">22 rotas <code>/dashboard/**</code> sem caso dedicado</td><td><span class="pill warn">P2</span></td><td>Priorizar pagamentos e reembolsos de agenda — lista em <a href="#cobertura">§12</a> e <code>mapa-casos-api.md</code></td></tr>
-      <tr><td class="dim">Pasta <code>audit/</code> vazia</td><td><span class="pill warn">P1</span></td><td>Manter até #98 ou remover scripts órfãos — <code>docs/plans/pedido-ajuste-estrategia.md</code></td></tr>
+      <tr><td class="dim">Pasta <code>audit/</code> reservada</td><td><span class="pill pass">ok</span></td><td>Sem suíte própria: trilha em <code>API-C-15</code>, <code>API-F-21</code>, <code>API-LGPD-13</code> via <code>getList.service</code> — ver <code>audit/README.md</code>. Scripts npm <code>all/e2e/functional-audit</code> removidos.</td></tr>
     </tbody>
   </table>
   </div>
@@ -293,6 +296,31 @@ html{overflow-anchor:none}
     </tbody>
   </table>
   </div>
+
+  <h3 id="ambiente-e2e-local">Ambiente local (macOS) — Playwright</h3>
+  <p class="note">Procedimento operacional completo no Obsidian (<i>01 - Operação atual → Local → E2E Playwright e tenant de testes</i>). Resumo técnico alinhado ao que rodamos em out/2026:</p>
+  <div class="tablewrap">
+  <table>
+    <thead><tr><th>Passo</th><th>O quê</th></tr></thead>
+    <tbody>
+      <tr><td class="dim">1 · Postgres + migrate</td><td>Igual desenvolvimento normal — ver fluxo localhost no Obsidian.</td></tr>
+      <tr><td class="dim">2 · Tenant de login</td><td>Recomendado: bloco <code>AUDIT_*</code> no <code>.env</code> + <code>node --env-file-if-exists=.env apps/api/scripts/seed-audit-env.mjs</code> (senha <b>definitiva</b>). <code>LIBRE_TENANT_SLUG</code> e <code>NEXT_PUBLIC_LIBRE_TENANT_SLUG</code> = mesmo slug (<code>auditoria</code> no CI).</td></tr>
+      <tr><td class="dim">3 · Outro slug de teste</td><td>Repetir passo 2 com <code>AUDIT_TENANT_SLUG</code> / e-mails desejados <b>ou</b> <code>db:seed:organizacao</code> (senha provisória → trocar no dashboard antes do E2E). <code>TEST_DATA_TENANT_SLUG</code> só direciona <code>db:seed:demo-data</code>, não o login.</td></tr>
+      <tr><td class="dim">4 · Stack</td><td><b>Um</b> <code>pnpm dev</code> (3000/3001/3003). Portas ocupadas: <code>scripts/kill-dev-ports.sh</code>.</td></tr>
+      <tr><td class="dim">5 · Executar</td><td><code>E2E_RUN=true</code> + <code>E2E_TENANT_*</code> (ou fallback <code>AUDIT_TENANT_*</code>) · <code>pnpm exec playwright test --project dashboard-chromium</code> · headed: <code>bash scripts/e2e-headed-local.sh</code>.</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout plain">
+    <h4>Armadilhas que geraram falso “só falha”</h4>
+    <ul>
+      <li>Playwright com dashboard parado → <code>ERR_CONNECTION_REFUSED</code> na 3003.</li>
+      <li>Dois processos na mesma porta → <code>EADDRINUSE</code>.</li>
+      <li>Slug do dashboard ≠ tenant do admin → login inválido.</li>
+      <li>Senha provisória do seed org → tela “Crie sua senha”; o smoke espera o menu “Hoje”.</li>
+      <li>Linha inválida no <code>.env</code> (ex. <code>provisionalPassword=...</code> solta) quebra <code>source .env</code>.</li>
+    </ul>
+  </div>
   <p class="note">Convenções das colunas (Rota, Token, Status, Asserção) e heurísticas SFDPOT/RCRCRC: <a href="#apendice-metodo">apêndice — método</a>.</p>
 </section>
 
@@ -301,7 +329,7 @@ html{overflow-anchor:none}
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   var TAB_GROUPS = {
-    inicio: ["panorama", "status-execucao"],
+    inicio: ["panorama", "status-execucao", "ambiente-e2e-local"],
     contexto: ["situacao", "pivot-libre", "transversal", "rcrcrc-pointer"],
     fechamento: ["cobertura", "piramide", "sequencia", "saida"],
     apendice: ["apendice"],
@@ -455,7 +483,7 @@ document.addEventListener("DOMContentLoaded", function () {
       <tr><td class="dim">Monorepo — API</td><td>Jest + supertest</td><td><code>dev.CrossHub/__tests__/unit/api</code> + <code>__tests__/integration</code></td><td><b>~50</b> unit + <b>~22</b> integrados (Postgres no CI)</td></tr>
       <tr><td class="dim">Monorepo — Dashboard</td><td>Vitest (node)</td><td><code>apps/dashboard/vitest.config.mts</code> → <code>__tests__/unit/front/dashboard</code></td><td><b>9</b> arquivos · <b>49/49</b> <code>UNIT-*</code> mapeados</td></tr>
       <tr><td class="dim">qa.crosshub.pactum</td><td>Mocha + Pactum</td><td>specs por domínio em <code>*/tests/functional</code></td><td><b>~170</b> funcionais API</td></tr>
-      <tr><td class="dim">Componente / E2E produto</td><td>— / Playwright (só audit em <code>@crosshub/ui</code>)</td><td><code>__tests__/component</code> e <code>__tests__/e2e</code> — a criar</td><td><b>0</b> no monorepo · E2E Pactum parcial</td></tr>
+      <tr><td class="dim">Componente / E2E produto</td><td>— / Playwright</td><td><code>__tests__/component</code> (a criar) · <code>__tests__/e2e/</code> + <code>playwright.config.ts</code></td><td><b>2</b> smokes E2E no monorepo · gate renderizado em <code>@crosshub/ui</code></td></tr>
     </tbody>
   </table>
   </div>
@@ -465,7 +493,8 @@ document.addEventListener("DOMContentLoaded", function () {
     <li><b><code>dev.CrossHub/__tests__/integration/api/helpers/tenant-fixture.ts</code></b> — tenant + admin + cliente para supertest; espelha o que o Pactum faz com <code>provisionTenant</code>.</li>
     <li><b><code>__tests__/integration/banco/rls.integration.spec.ts</code></b> — RLS com <code>application_user</code>; isolamento entre organizações continua obrigatório mesmo no produto Libre.</li>
     <li><b><code>POST /dashboard/test-fixtures/tenant</code></b> — substitui <code>POST /admin/tenants</code> (ADR-002); exige <code>TEST_FIXTURES_ENABLED</code> + segredo compartilhado com o <code>pre-setup</code> deste repo.</li>
-    <li><b>Portões de CI no monorepo</b> — jobs <code>unitario</code>, <code>integrado</code>, <code>rastreabilidade-casos</code> e <code>rastreabilidade-rotas</code> contra este HTML/JSON.</li>
+    <li><b>Portões de CI no monorepo</b> — jobs <code>unitario</code>, <code>integrado</code>, <code>rastreabilidade-casos</code>, <code>rastreabilidade-rotas</code> e <code>e2e-smoke</code> (Playwright + Postgres + tenant <code>auditoria</code>).</li>
+    <li><b>Helpers E2E</b> — <code>__tests__/e2e/helpers/env.ts</code> (<code>E2E_RUN</code>, credenciais <code>AUDIT_*</code>) e <code>dashboard-login.ts</code> (mesmos seletores do gate renderizado).</li>
   </ul>
 
   <h3>1.2 Autenticação nos testes de API</h3>
@@ -485,11 +514,11 @@ document.addEventListener("DOMContentLoaded", function () {
   <div class="callout danger">
     <h4>Sem estes cinco itens, boa parte desta estratégia é intestável</h4>
     <ul>
-      <li><b>Playwright instalado e configurado.</b> Não há <code>playwright.config.*</code> no repositório. O único vestígio é a dependência em <code>packages/ui</code>, usada apenas por <code>scripts/audit-rendered.mjs</code> para capturas de tela.</li>
+      <li><b>Playwright no monorepo — parcial.</b> Existe <code>playwright.config.ts</code> na raiz de <code>dev.CrossHub</code> e smokes <code>E2E-MN-01</code> / <code>E2E-AG-01</code> (este último com trecho cross-app em <code>test.fixme</code>). A dependência em <code>packages/ui</code> continua separada, para <code>audit-rendered.mjs</code>.</li>
       <li><b>Suíte de specs de tenant em <code>apps/api/test/</code>.</b> Sugestão de organização: um arquivo por módulo (<code>dashboard-appointments.integration.spec.ts</code>, <code>dashboard-forms.integration.spec.ts</code>…), todos sobre o mesmo helper de seed.</li>
       <li><b>Fábrica de tenant de teste com dois papéis distintos.</b> Um Administrador Principal (<code>is_primary_admin = true</code>) e um administrador comum <b>sem</b> <code>can_view_sensitive_data</code>. Sem esse par, nenhum cenário de LGPD é executável — e LGPD é o eixo de permissão mais transversal do produto.</li>
       <li><b>Controle do relógio.</b> Janelas de 24 h e 7 dias na Home, limite de cancelamento de 24 h em Agendamentos e retenção em dias no LGPD dependem de tempo. Sem <i>fake timers</i> no backend ou semeadura com datas relativas, esses casos viram testes instáveis.</li>
-      <li><b>Camada de componente e E2E no monorepo.</b> Unitário e integração Jest já rodam no CI; faltam <code>__tests__/component/dashboard</code> (RTL+MSW) e <code>__tests__/e2e</code> (Playwright) para regressão dos painéis e jornadas cross-app.</li>
+      <li><b>Camada de componente e o restante das jornadas E2E.</b> Unitário e integração Jest já rodam no CI; faltam <code>__tests__/component/dashboard</code> (RTL+MSW) e as outras <b>29</b> jornadas <code>E2E-*</code> além dos dois smokes atuais — incluindo caminho feliz cross-app completo de Agendamentos.</li>
     </ul>
   </div>
   <p class="note"><b>Concluído desde a versão anterior:</b> extração das funções puras dos 48 casos <code>UNIT-*</code> (<code>*.pure.ts</code>, <code>apps/dashboard/lib/</code>) — ver mapa em <code>docs/plans/mapa-casos-unit.md</code>.</p>
@@ -542,7 +571,7 @@ document.addEventListener("DOMContentLoaded", function () {
     <thead><tr><th>Prioridade</th><th>Entrega</th></tr></thead>
     <tbody>
       <tr><td class="prio"><span class="pill fail">P0</span></td><td><code>dev.CrossHub/__tests__/component/dashboard/</code> — painéis extraídos com MSW</td></tr>
-      <tr><td class="prio"><span class="pill fail">P0</span></td><td>Playwright no monorepo — smokes <code>E2E-MN-01</code>, <code>E2E-AG-01</code>, <code>E2E-F-01</code></td></tr>
+      <tr><td class="prio"><span class="pill warn">P0</span></td><td>Playwright — smokes <code>E2E-MN-01</code> e <code>E2E-AG-01</code> <b>iniciados</b>; falta <code>E2E-F-01</code>, cross-app AG e CI estável</td></tr>
       <tr><td class="prio"><span class="pill warn">P1</span></td><td>Estratégia / testes para <code>apps/web</code> (unit em <code>lib/</code> + E2E mínimo)</td></tr>
       <tr><td class="prio"><span class="pill warn">P1</span></td><td>Limpar <code>scripts/generate-from-openapi.mjs</code> e <code>seed-demo-clinica.mjs</code> de rotas admin</td></tr>
       <tr><td class="prio"><span class="pill info">P2</span></td><td>Casos de contrato pendentes (pagamentos/refunds de agenda) — seção Cobertura</td></tr>
@@ -1792,7 +1821,7 @@ document.addEventListener("DOMContentLoaded", function () {
       <tr>
         <td class="dim">E2E</td><td>Playwright</td>
         <td>Jornadas que atravessam Dashboard, API e app do cliente; comportamentos que a interface promete além do contrato (rascunho descartado, motivo exigido na tela, mensagem da API exibida em vez de erro genérico).</td>
-        <td><code>__tests__/e2e/</code>, com <code>playwright.config.ts</code> — ambos a criar.</td>
+        <td><code>dev.CrossHub/__tests__/e2e/</code> · <code>playwright.config.ts</code> · specs <code>*.dashboard.spec.ts</code> / <code>*.cross-app.spec.ts</code> · ver <a href="#ambiente-e2e-local">ambiente local</a>.</td>
       </tr>
     </tbody>
   </table>
@@ -1801,25 +1830,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
 <section>
   <h2 id="sequencia">14. Próximos passos (pós-Pactum)</h2>
-  <p class="note">A suíte Pactum já cobre <b>174/178</b> casos de API — ver <a href="#status-execucao">status</a>. A sequência abaixo é o que falta para homologação de UI e alinhamento pós-pivot, não reimplementação dos P0 de Agendamentos/LGPD na API.</p>
+  <p class="note">A suíte Pactum cobre <b>175/178</b> casos automatizáveis (três bloqueados) — ver <a href="#status-execucao">status</a>. A sequência abaixo é o que falta para homologação de UI e alinhamento pós-pivot, não reimplementação dos P0 de Agendamentos/LGPD na API.</p>
   <div class="tablewrap">
   <table>
     <thead><tr><th>Etapa</th><th>Entrega</th><th>Por que nesta ordem</th></tr></thead>
     <tbody>
       <tr>
-        <td class="dim">1 · Imediato<br><span class="pill warn">rápido</span></td>
-        <td><code>AG-30-F.test.ts</code> · checklist <a href="#pivot-libre">Pivot Libre</a> (openapi, tenants, geradores) · <code>npm run generate:map</code> verde</td>
-        <td>Fecha o único caso API “ausente” automatizável e remove drift de contrato após ADR-002.</td>
+        <td class="dim">1 · Imediato<br><span class="pill pass">feito</span></td>
+        <td><code>AG-30-F.test.ts</code> · <code>npm run generate:map</code> sem casos API “ausentes”</td>
+        <td>Único spec Pactum que faltava para casos automatizáveis.</td>
       </tr>
       <tr>
-        <td class="dim">2 · Bloqueia merge de UI<br><span class="pill fail">P0</span></td>
-        <td>Playwright + fábrica de tenant (Principal + admin comum) · <code>E2E-REG-01</code> · testes de componente dos quatro painéis extraídos</td>
-        <td>Console com rota única <code>/</code> — regressão visual/comportamental sem isso é manual.</td>
+        <td class="dim">2 · Em curso<br><span class="pill warn">P0</span></td>
+        <td>Playwright: <code>E2E-MN-01</code> verde local/CI · <code>E2E-AG-01</code> smoke dashboard · job <code>e2e-smoke</code> · doc <a href="#ambiente-e2e-local">local</a></td>
+        <td>Base instalada; falta cross-app, fábrica Principal+admin comum, <code>E2E-REG-01</code> e componentes.</td>
       </tr>
       <tr>
         <td class="dim">3 · E2E núcleo<br><span class="pill fail">P0</span></td>
-        <td>Smokes <code>E2E-MN-01</code>, <code>E2E-AG-01</code>, <code>E2E-F-01</code>, <code>E2E-C-01</code> · controle de relógio para prazos de 24 h e retenção</td>
+        <td>Completar <code>E2E-AG-01</code> · <code>E2E-F-01</code>, <code>E2E-C-01</code> · controle de relógio (24 h, retenção)</td>
         <td>Jornadas que a API sozinha não prova (estado React, mensagens na tela).</td>
+      </tr>
+      <tr>
+        <td class="dim">2b · Bloqueia merge de UI<br><span class="pill fail">P0</span></td>
+        <td>Testes de componente dos quatro painéis extraídos · checklist <a href="#pivot-libre">Pivot Libre</a> (openapi, tenants, geradores)</td>
+        <td>Console com rota única <code>/</code> — regressão visual/comportamental sem isso é manual.</td>
       </tr>
       <tr>
         <td class="dim">4 · Cobertura de contrato<br><span class="pill info">P2</span></td>
