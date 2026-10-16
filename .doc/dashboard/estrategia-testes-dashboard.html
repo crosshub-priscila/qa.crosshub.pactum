@@ -280,7 +280,6 @@ html{overflow-anchor:none}
       <tr><td class="dim">Pivot Libre — limpeza</td><td><span class="pill fail">P0</span></td><td>Tenants <code>ANL-*</code> obsoletos · <code>openapi.json</code> de <code>staging</code> · geradores sem <code>/admin/*</code> — ver <a href="#pivot-libre">§1b</a></td></tr>
       <tr><td class="dim">Pré-requisitos de teste (relógio, dois admins)</td><td><span class="pill fail">P0</span></td><td>Seção <a href="#situacao">1.3</a> — fake timers / fábrica Principal + admin comum</td></tr>
       <tr><td class="dim">22 rotas <code>/dashboard/**</code> sem caso dedicado</td><td><span class="pill warn">P2</span></td><td>Priorizar pagamentos e reembolsos de agenda — lista em <a href="#cobertura">§12</a> e <code>mapa-casos-api.md</code></td></tr>
-      <tr><td class="dim">Pasta <code>audit/</code> reservada</td><td><span class="pill pass">ok</span></td><td>Sem suíte própria: trilha em <code>API-C-15</code>, <code>API-F-21</code>, <code>API-LGPD-13</code> via <code>getList.service</code> — ver <code>audit/README.md</code>. Scripts npm <code>all/e2e/functional-audit</code> removidos.</td></tr>
     </tbody>
   </table>
   </div>
@@ -1776,7 +1775,7 @@ document.addEventListener("DOMContentLoaded", function () {
   <div class="callout plain">
     <ul>
       <li><b>Contagem do painel.</b> O painel e o JSON devem mostrar o mesmo total de casos de API (hoje <b>178</b>), gerado a partir das tabelas — não repetir número escrito à mão.</li>
-      <li><b>Módulo de auditoria com endpoint de leitura.</b> <code>GET /dashboard/audit-logs</code> (tenantAuth, somente leitura, paginado, filtros por ação, ator, entidade e período) entrou pelo #96/#98. Os casos que verificam a trilha (<code>API-C-15</code>, <code>API-F-21</code>, <code>API-LGPD-13</code>) fazem a ação por HTTP e conferem o registro pela própria API, cada um na pasta do seu módulo; a pasta <code>audit/</code> da automação guarda só o cliente gerado da rota.</li>
+      <li><b>Trilha de auditoria.</b> <code>GET /dashboard/audit-logs</code> (#96/#98). Casos <code>API-C-15</code>, <code>API-F-21</code>, <code>API-LGPD-13</code> conferem o registro nos domínios <code>people/</code>, <code>forms/</code>, <code>privacy/</code> via <code>core/src/services/audit/getList.service.ts</code> — não há pasta de domínio <code>audit/</code> na suíte.</li>
       <li><b>Fonte de verdade em <code>API-AG-22</code>.</b> O <b>código é a fonte</b>: o cliente não remarca, só cancela. A especificação é que está desatualizada. O caso assertar <code>404</code> congela o comportamento atual de propósito — se a remarcação pelo cliente virar requisito, o teste falha e obriga a revisão, que é o efeito desejado.</li>
     </ul>
   </div>

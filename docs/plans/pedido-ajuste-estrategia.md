@@ -48,12 +48,13 @@ separando o arranjo da ação — ver item 1.5.
 
 ### 1.2 `Token` — obrigatória
 
-Qual das três audiências de JWT o caso usa. Valores exatamente como no contrato:
+Qual audiência de JWT o caso usa. Valores exatamente como no contrato (pós ADR-002):
 
 - `tenantAuth` — admin do tenant (`POST /auth/platform/tenant/login`)
 - `endUserAuth` — cliente final (`POST /auth/platform/public/login`)
-- `platformAuth` — super admin (`POST /auth/platform/login`)
-- `—` quando a rota é aberta (`/health`, `/public/tenants/{slug}`)
+- `—` quando a rota é aberta (`/health`, fixtures de teste, rotas marcadas inexistentes)
+
+> **`platformAuth` foi removido** com o Super Admin. Ver `docs/plans/pivot-libre-impacto-testes.md`.
 
 **Por que importa:** vários casos da estratégia se distinguem *só* pela audiência.
 `API-AG-19` (prazo de 24 h vale para o cliente) e `API-AG-20` (não vale para o admin)
@@ -140,8 +141,8 @@ casamento por sufixo, que é justamente onde os 124 casos se perdem.
 
 2. ~~**Módulo sem endpoint.**~~ Confirmado: o contrato não expõe nenhuma rota de auditoria, e
    os quatro casos que dependem dela (`F-21`, `LGPD-13`, `C-15`, `AN-04`) estão marcados como
-   **não verificáveis** na estratégia, ligados às issues #96 e #98. A pasta `audit/` do projeto
-   de automação está vazia — ver a pendência abaixo.
+   **não verificáveis** na estratégia, ligados às issues #96 e #98. Trilha coberta via
+   `getList.service` em people/forms/privacy — pasta de domínio `audit/` removida.
 
 3. ~~**Divergência em `API-AG-22`.**~~ O caso continua documentando que
    `POST /public/me/appointments/{id}/reschedule` existe na especificação e não no contrato, e a
@@ -165,12 +166,10 @@ O que mudou de contrato entre a estratégia e a automação:
 - `npm run generate:map` **reprova** quando um caso P0 fica sem teste, e confere nos dois
   sentidos — inclusive arquivo no disco sem caso na estratégia, que foi como o `G-08b` apareceu.
 
-### Pendência aberta deste lado
+### ~~Pendência `audit/`~~
 
-A pasta `audit/` do projeto de automação está **vazia** e tem três scripts npm
-(`all-audit`, `e2e-audit`, `functional-audit`) que não executam nada. Ou o módulo volta quando a
-issue #98 for resolvida, ou a pasta e os scripts saem. Não decidi por conta própria porque
-apagar a pasta é sinalizar que auditoria saiu do escopo, e ela não saiu — está bloqueada.
+Pasta de domínio `audit/` e scripts npm órfãos **removidos** (out/2026). Cliente HTTP permanece em
+`core/src/services/audit/`; specs de trilha nos módulos que disparam o evento.
 
 ---
 

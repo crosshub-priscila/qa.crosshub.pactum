@@ -109,13 +109,18 @@ unitários, de integração e de componente vive em `../dev.CrossHub/__tests__/`
 
 ```
 .doc/
-├── dashboard/
-│   ├── estrategia-testes-dashboard.html   # a fonte — editar aqui
-│   ├── estrategia-testes-dashboard.json   # artefato de build
-│   └── build-strategy-json.mjs            # gera o .json a partir do HTML
-└── admin/
-    └── estrategia-testes-admin.md
+└── dashboard/
+    ├── estrategia-testes-dashboard.html   # a fonte — editar aqui
+    ├── estrategia-testes-dashboard.json   # artefato de build
+    └── build-strategy-json.mjs            # gera o .json a partir do HTML
+
+docs/plans/
+├── pivot-libre-impacto-testes.md          # ADR-002: remover / alterar / implementar
+├── mapa-casos-api.md                      # gerado — rastreabilidade Pactum
+└── mapa-casos-unit.md                     # gerado — rastreabilidade monorepo
 ```
+
+A estratégia do console Super Admin (`apps/admin`) foi arquivada com o ADR-002 — ver `dev.CrossHub/docs/archive/admin-console/`.
 
 Rastreabilidade, nos dois sentidos, com reprovação quando um caso P0 fica sem
 teste:
@@ -150,7 +155,7 @@ preSetup/            # login e massa executados antes da suíte
   tests/functional/  # [CODIGO]-F.test.ts
 ```
 
-Domínios: `addons`, `appointments`, `audit`, `auth`, `banners`, `billing`,
+Domínios: `addons`, `appointments`, `auth`, `banners`, `billing`,
 `branding`, `catalog`, `dashboard`, `forms`, `groups`, `people`, `plans`,
 `privacy`, `tenants` — espelhando os módulos de `apps/api/src` do CrossHub.
 

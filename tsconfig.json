@@ -28,9 +28,6 @@
       "@appointments-data/*": ["./appointments/data/*"],
       "@appointments-tests/*": ["./appointments/tests/*"],
 
-      "@audit/*": ["./audit/*"],
-      "@audit-data/*": ["./audit/data/*"],
-      "@audit-tests/*": ["./audit/tests/*"],
 
       "@auth/*": ["./auth/*"],
       "@auth-data/*": ["./auth/data/*"],
