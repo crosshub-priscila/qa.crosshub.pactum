@@ -41,6 +41,9 @@ const PASTA_POR_MODULO = {
 
 const PRIORIDADES = new Set(["P0", "P1", "P2"])
 
+/** Unitários LGPD fora da estratégia enquanto o módulo estiver suspenso (sem UI multi-admin). */
+const UNIT_SUSPENSOS = new Set(["UNIT-LGPD-01", "UNIT-LGPD-02", "UNIT-LGPD-03"])
+
 /** SHA curto de um repo, para o relatório dizer contra o que ele asseverou. */
 function sha(dir) {
 	try {
@@ -97,7 +100,7 @@ function main() {
 	const daEstrategia = new Set(casos.map((c) => c.id))
 	const semTeste = casos.filter((caso) => !porId.has(caso.id))
 	const semCaso = [...porId.entries()]
-		.filter(([id]) => !daEstrategia.has(id))
+		.filter(([id]) => !daEstrategia.has(id) && !UNIT_SUSPENSOS.has(id))
 		.flatMap(([, ocorrencias]) => ocorrencias)
 	const semId = arquivos.filter((arquivo) => !arquivo.ids.length)
 

@@ -1,6 +1,6 @@
 # Mapa dos casos de API — Estratégia do Dashboard
 
-Rastreabilidade entre os **178 casos de API** de `.doc/dashboard/estrategia-testes-dashboard.json` (105 deles P0), os endpoints de `openapi.json` e os services em `core/src/services/`.
+Rastreabilidade entre os **164 casos de API** de `.doc/dashboard/estrategia-testes-dashboard.json` (94 deles P0), os endpoints de `openapi.json` e os services em `core/src/services/`.
 
 Estratégia gerada em 2026-10-16 · mapa gerado por `npm run generate:map` — não editar à mão.
 
@@ -88,27 +88,6 @@ Domínio: `forms/` · casos: 26 (P0: 14)
 | `API-F-24` | P1 | Colisão de rota | `tenantAuth` | 200 | `getListAllSubmissions` | — | `submissions` | `F-24-F.test.ts` | — |
 | `API-F-25` | P0 | Encerrar formação de grupos cria os grupos | `tenantAuth` | 201 | `postClose` | — | — | `F-25-F.test.ts` | — |
 | `API-F-XT` | P0 | Isolamento entre tenants | `tenantAuth` | 200 | `getListForms` | — | — | `F-XT-F.test.ts` | — |
-
-## Privacidade e LGPD (`LGPD`)
-
-Domínio: `privacy/` · casos: 14 (P0: 11)
-
-| Caso | Prio | Cenário | Token | Status | Service (ação) | Services (arranjo) | Asserção literal | Teste | Bug |
-|---|---|---|---|---|---|---|---|---|---|
-| `API-LGPD-01` | P0 | Primeiro admin do tenant vira Principal | — | 201 | `postProvisionTenant` | — | — | `LGPD-01-F.test.ts` | — |
-| `API-LGPD-02` | P0 | Principal legado sem a flag continua autorizado | `tenantAuth` | 200 | `getSubmission` | — | — | **não verificável** — verificação manual, uma vez, na migração : o estado só existe em base legada e a API não o constrói de propósito ( API-LGPD-06 ). Decisão registrada em #98 ([#98](https://github.com/pricaimiTech/dev.CrossHub/issues/98)) | — |
-| `API-LGPD-03` | P0 | Só o Principal concede acesso | `tenantAuth` | 403 | `patchSensitiveDataAccess` | — | `Apenas o Administrador Principal pode alterar o acesso a dados sensíveis.` | `LGPD-03-F.test.ts` | — |
-| `API-LGPD-04` | P0 | Leitura sem autorização | `tenantAuth` | 403 | `getSubmission` | — | `Você não possui a permissão para visualizar respostas sensíveis.` | `LGPD-04-F.test.ts` | — |
-| `API-LGPD-05` | P0 | Envio sem autorização | `tenantAuth` | 403 | `postAssignForm` | — | — | `LGPD-05-F.test.ts` | — |
-| `API-LGPD-06` | P0 | Acesso do Principal é irrevogável | `tenantAuth` | 409 | `patchSensitiveDataAccess` | — | `O Administrador Principal possui acesso permanente a dados sensíveis.` | `LGPD-06-F.test.ts` | — |
-| `API-LGPD-07` | P0 | Alvo inválido | `tenantAuth` | 404 | `patchSensitiveDataAccess` | — | `Profissional não encontrado.` | `LGPD-07-F.test.ts` | — |
-| `API-LGPD-08` | P1 | Autorização vale imediatamente | `tenantAuth` | 200 | `getSubmission` | `patchSensitiveDataAccess` | — | `LGPD-08-F.test.ts` | — |
-| `API-LGPD-09` | P0 | Revogação vale imediatamente | `tenantAuth` | 403 | `getSubmission` | `patchSensitiveDataAccess` | — | `LGPD-09-F.test.ts` | — |
-| `API-LGPD-10` | P0 | Limites da retenção | `tenantAuth` | 400 | `patchUpdateSettings` | — | `A retenção deve ser um número inteiro entre 1 e 3650 dias.` | `LGPD-10-F.test.ts` | — |
-| `API-LGPD-11` | P0 | Execução da retenção | `tenantAuth` | 200 | `postRunRetention` | `patchUpdateSettings` | — | `LGPD-11-F.test.ts` | — |
-| `API-LGPD-12` | P1 | Retenção independe da autorização | `tenantAuth` | 200 | `postRunRetention` | — | — | `LGPD-12-F.test.ts` | — |
-| `API-LGPD-13` | P1 | Auditoria da mudança de acesso | `tenantAuth` | 200 | `patchSensitiveDataAccess` | `getList` | — | `LGPD-13-F.test.ts` | — |
-| `API-LGPD-XT` | P0 | Isolamento entre tenants | `tenantAuth` | 200 | `getProfessionals` | `patchSensitiveDataAccess` | — | `LGPD-XT-F.test.ts` | — |
 
 ## Clientes (`C`)
 
@@ -280,16 +259,15 @@ Nenhum bug aberto no momento.
 
 ## Casos sem teste
 
-**3 de 178** casos da estratégia não têm arquivo de teste: 0 ausente(s) e 3 não verificável(is) contra o contrato atual.
+**2 de 164** casos da estratégia não têm arquivo de teste: 0 ausente(s) e 2 não verificável(is) contra o contrato atual.
 
-### Não verificáveis contra o contrato (3)
+### Não verificáveis contra o contrato (2)
 
 Descritos na estratégia e sem rota que os torne observáveis. Saem daqui quando a
 issue correspondente for resolvida — não antes, e não por serem esquecidos.
 
 | Caso | Prio | Cenário | Motivo |
 |---|---|---|---|
-| `API-LGPD-02` | P0 | Principal legado sem a flag continua autorizado | verificação manual, uma vez, na migração : o estado só existe em base legada e a API não o constrói de propósito ( API-LGPD-06 ). Decisão registrada em #98 ([#98](https://github.com/pricaimiTech/dev.CrossHub/issues/98)) |
 | `API-CAT-15` | P2 | E-mail só com configuração completa | verificação manual : exige a API no ar sem EMAIL_FROM , que é estado do processo, não de uma requisição. Decisão registrada em #123 ([#123](https://github.com/pricaimiTech/dev.CrossHub/issues/123)) |
 | `API-AN-04` | P2 | Auditoria não tem evento de anonimização | o contrato não expõe leitura de trilha de auditoria ([#98](https://github.com/pricaimiTech/dev.CrossHub/issues/98)) |
 
@@ -299,9 +277,9 @@ Nenhum. Todo arquivo no disco corresponde a um caso da estratégia.
 
 ## Cobertura do contrato
 
-Rotas citadas por algum caso: **93** de 129 do contrato.
+Rotas citadas por algum caso: **91** de 129 do contrato.
 
-### Rotas `/dashboard/**` sem nenhum caso de API (24 de 103)
+### Rotas `/dashboard/**` sem nenhum caso de API (26 de 103)
 
 - `DELETE /dashboard/appointments/blocks/{id}` → `appointments/deleteBlock`
 - `DELETE /dashboard/forms/{id}` → `forms/deleteForm`
@@ -324,6 +302,8 @@ Rotas citadas por algum caso: **93** de 129 do contrato.
 - `PATCH /dashboard/appointments/{id}/financial` → `appointments/patchAdjustFinancial`
 - `PATCH /dashboard/categories/{id}` → `catalog/patchUpdateCategory`
 - `PATCH /dashboard/forms/{id}` → `forms/patchUpdateForm`
+- `PATCH /dashboard/privacy/settings` → `privacy/patchUpdateSettings`
 - `PATCH /dashboard/settings/contacts` → `dashboard/patchUpdateContacts`
 - `POST /dashboard/appointments/{id}/payments` → `appointments/postRegisterPayment`
 - `POST /dashboard/appointments/{id}/refunds` → `appointments/postRefundPayment`
+- `POST /dashboard/test-fixtures/tenant` → `fixtures/postProvisionTenant`
