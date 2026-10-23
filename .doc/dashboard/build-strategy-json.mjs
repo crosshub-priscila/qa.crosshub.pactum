@@ -29,6 +29,9 @@ const SAIDA = resolve(AQUI, 'estrategia-testes-dashboard.json');
 const CONTRATO = process.argv[2] ? resolve(process.argv[2]) : null;
 
 /** Prefixo do ID -> módulo, para o consumidor não precisar reimplementar a tabela. */
+/** Fora da suíte ativa — permanecem descritos no HTML até haver painel de usuários. */
+const casoSuspenso = (id) => /^API-LGPD-/.test(id) || /^UNIT-LGPD-/.test(id);
+
 const MODULOS = {
   AG: 'Agendamentos', F: 'Formulários', LGPD: 'Privacidade e LGPD', C: 'Clientes',
   H: 'Home', G: 'Grupos', CAT: 'Catálogo', MK: 'Marca e aparência',
@@ -262,10 +265,11 @@ for (const linha of html.matchAll(/<tr>(.*?)<\/tr>/gs)) {
   if (!id) continue;
 
   if (/^UNIT-[A-Z]+-\d+$/.test(id)) {
-    casosUnit.push(casoUnitario(celulas, id));
+    if (!casoSuspenso(id)) casosUnit.push(casoUnitario(celulas, id));
     continue;
   }
   if (!/^API-[A-Z]+-/.test(id)) continue;
+  if (casoSuspenso(id)) continue;
 
   const por = (classe) => celulas.find((c) => c.classe === classe);
   const rota = por('rota');

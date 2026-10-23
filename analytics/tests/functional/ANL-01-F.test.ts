@@ -1,18 +1,16 @@
 import { assertTs, authBusiness, describeName } from "@core/constants"
 import type { IParamsDefault } from "@core/interfaces/global.interface"
 import getSession from "@core/services/dashboard/getSession.service"
-import { tenantFor } from "@core/utils/tenant.utils"
 import { analyticsANL01 } from "@analytics-data/analytics.data"
 
 describe(describeName.dashboard, () => {
-	const tenant = tenantFor(analyticsANL01.caseId)
 	let adminParams: IParamsDefault
 
-	before("Admin do tenant reservado ao caso", async () => {
+	before("Admin principal do tenant da suíte (seed CI)", async () => {
 		adminParams = await authBusiness.loginAsTenantAdmin(
-			tenant.slug,
-			tenant.adminEmail,
-			tenant.adminPassword,
+			`${process.env.TENANT_SLUG}`,
+			`${process.env.TENANT_EMAIL}`,
+			`${process.env.TENANT_PASSWORD}`,
 			analyticsANL01.loginParams,
 		)
 	})

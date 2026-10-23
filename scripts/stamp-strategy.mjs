@@ -164,6 +164,32 @@ for (const testCase of casos) carimba(testCase.id, selo(testCase))
 
 for (const caso of casosUnit) carimba(caso.id, seloUnit(caso))
 
+const SELO_SUSPENSO =
+	'<span class="auto"><span class="pill info">suspenso</span><small>reativar com painel de usuários</small></span>'
+for (const id of [
+	"API-LGPD-01",
+	"API-LGPD-02",
+	"API-LGPD-03",
+	"API-LGPD-04",
+	"API-LGPD-05",
+	"API-LGPD-06",
+	"API-LGPD-07",
+	"API-LGPD-08",
+	"API-LGPD-09",
+	"API-LGPD-10",
+	"API-LGPD-11",
+	"API-LGPD-12",
+	"API-LGPD-13",
+	"API-LGPD-XT",
+	"UNIT-LGPD-01",
+	"UNIT-LGPD-02",
+	"UNIT-LGPD-03",
+	"E2E-LGPD-01",
+	"E2E-LGPD-02",
+]) {
+	carimba(id, SELO_SUSPENSO)
+}
+
 writeFileSync(HTML, html)
 
 console.log(
