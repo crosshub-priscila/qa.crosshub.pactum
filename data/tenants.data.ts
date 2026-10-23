@@ -21,11 +21,7 @@ export const secondTenant = {
 export const secondTenantFile = "preSetup/.tenants.json"
 
 /**
- * Segundo admin do tenant B, usado pelo caso `LGPD-01`.
- *
- * O primeiro admin de um tenant nasce Principal; este existe para provar que o
- * **segundo** não nasce. Vive no tenant B porque o tenant A já tem vários
- * administradores, e a regra só se observa a partir de um tenant novo.
+ * Segundo admin do tenant B (reservado — hoje só para fixtures futuras / LGPD suspenso).
  */
 export const secondTenantExtraAdmin = {
 	name: "QA segundo admin",
