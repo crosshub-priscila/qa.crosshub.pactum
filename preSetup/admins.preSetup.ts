@@ -61,11 +61,17 @@ describe("preSetup", () => {
 		const professionals = await getProfessionals(tenant200)
 		const pool: Record<string, IPooledAdmin> = {}
 
+		type ProfessionalRow = {
+			id: string
+			email: string
+			isPrimaryAdmin?: boolean
+		}
+
 		for (const caseId of Object.keys(adminAllocation)) {
 			const email = adminEmailFor(caseId)
-			const found = (
-				professionals.json as Array<{ id: string; email: string }>
-			).filter((admin) => admin.email === email)
+			const found = (professionals.json as ProfessionalRow[]).filter(
+				(admin) => admin.email === email && !admin.isPrimaryAdmin,
+			)
 
 			const adminId = found[0]?.id
 			if (!adminId) {
