@@ -19,6 +19,7 @@ import postPublicSubmitForm from "../../services/public/postPublicSubmitForm.ser
 import postAssignForm from "../../services/forms/postAssignForm.service"
 import postPublish from "../../services/forms/postPublish.service"
 import putReplaceQuestions from "../../services/forms/putReplaceQuestions.service"
+import postSeedLegacyForm from "../../services/fixtures/postSeedLegacyForm.service"
 
 /** Formulário já publicado, pronto para receber respostas. */
 export interface IPublishedForm {
@@ -68,8 +69,22 @@ export default class FormsBusiness {
 			paramsDefault.token,
 		)
 
-		const formResponse = await postCreateForm(form, created201)
-		const formId: string = formResponse.json.id
+		// BUG-30: TEAM_FORMATION não nasce mais pela API normal — fixture de legado.
+		const formId: string =
+			form.type === "TEAM_FORMATION"
+				? (
+						await postSeedLegacyForm(
+							{
+								title: form.title,
+								type: "TEAM_FORMATION",
+								groupingGroupCount: form.groupingGroupCount ?? undefined,
+								groupingGroupSize: form.groupingGroupSize ?? undefined,
+								groupingStrategy: form.groupingStrategy ?? undefined,
+							},
+							created201,
+						)
+					).json.id
+				: (await postCreateForm(form, created201)).json.id
 
 		await putReplaceQuestions(formId, questions, updated200)
 		await postPublish(formId, created201)

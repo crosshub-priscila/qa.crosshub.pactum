@@ -41,3 +41,19 @@ export interface IProvisionTenantResult {
 	enabledModules: string[]
 	created: boolean
 }
+
+/** BUG-30 — tipos que a API de criação não aceita mais; só via fixture. */
+export interface ISeedLegacyForm {
+	title: string
+	type: "TEAM_FORMATION"
+	groupingGroupCount?: number
+	groupingGroupSize?: number
+	groupingStrategy?: "random" | "similar"
+}
+
+export interface ISeedLegacyFormResult {
+	id: string
+	title: string
+	type: string
+	status: string
+}

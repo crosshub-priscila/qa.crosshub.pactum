@@ -45,7 +45,8 @@ export const endUserAllocation: Record<string, number> = {
 	"G-04": 1,
 	"G-05": 1,
 	"G-08b": 6,
-	"G-12": 1,
+	/** Respondente do formulário + outra pessoa para tentar incluir (BUG-46). */
+	"G-12": 2,
 	"CAT-07": 1,
 	"CAT-10": 1,
 	"CAT-11": 1,

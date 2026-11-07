@@ -45,6 +45,33 @@ export const formsF25 = {
 	semComposicao: { groupsCreated: 0 },
 }
 
+/**
+ * `API-F-26` — listagem `GET /dashboard/forms` expõe `grouping*` em `TEAM_FORMATION`
+ * (BUG-11); tipos sem composição permanecem `null`. Massa via fixture (BUG-30).
+ */
+export const formsF26 = {
+	...formDefaults,
+	casePrefix: "[F-26]",
+	formType: "TEAM_FORMATION" as const,
+	groupingGroupCount: 1,
+	groupingGroupSize: 1,
+	groupingStrategy: "random" as const,
+}
+
+/**
+ * `API-F-38b` — duplicar `TEAM_FORMATION` responde 400 (BUG-30).
+ * Massa legado via `POST /dashboard/test-fixtures/forms`.
+ */
+export const formsF38b = {
+	...formDefaults,
+	casePrefix: "[F-38b]",
+	formType: "TEAM_FORMATION" as const,
+	groupingGroupCount: 3,
+	groupingGroupSize: 4,
+	groupingStrategy: "similar" as const,
+	draftStatus: "DRAFT",
+}
+
 /** `API-F-01` — publicar exige ao menos uma pergunta. */
 export const formsF01 = {
 	...formDefaults,

@@ -152,13 +152,20 @@ export const groupsG11 = {
 	activeStatus: "active",
 }
 
-/** `API-G-12` — integrantes de grupo de formulário são imutáveis. */
+/**
+ * `API-G-12` — integrantes de grupo de formulário são imutáveis.
+ *
+ * Desde o BUG-01, reenviar o **mesmo** conjunto (`isSameMemberSet`) responde
+ * 200; a troca de verdade (outra pessoa) continua 400 (BUG-46).
+ */
 export const groupsG12 = {
 	...groupDefaults,
 	casePrefix: "[G-12]",
 	caseId: "G-12",
 	answer: "Resposta do respondente",
 	newName: "[G-12] Nome editado",
+	sealedMembersMessage:
+		"Participantes de grupos criados por formulário não podem ser alterados.",
 }
 
 /** `API-G-13` — a edição substitui a composição inteira. */
