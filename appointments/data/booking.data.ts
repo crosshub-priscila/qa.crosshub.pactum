@@ -125,7 +125,14 @@ export const bookingAG23 = {
 	weekday: weekdayOfDate(dateForCase("AG-23")),
 	capacity: 5,
 	approvalMode: "automatic" as const,
-	finalStatus: "completed" as const,
+	/**
+	 * Cancelado pelo admin, e não `completed`: desde o BUG-05 a API só aceita
+	 * concluir ou registrar falta a partir do horário do agendamento (409 antes
+	 * dele), e o agendamento do arranjo é futuro. `cancelled_by_admin` também é
+	 * final e não tem trava de horário.
+	 */
+	finalStatus: "cancelled_by_admin" as const,
+	finalReason: "Cancelado no arranjo do AG-23.",
 	forbiddenStatus: "approved" as const,
 	errorMessage: "Essa alteração de status não é permitida.",
 }

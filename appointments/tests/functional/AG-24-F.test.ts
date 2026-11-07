@@ -99,6 +99,8 @@ describe(describeName.dashboard, () => {
 				professionalId,
 				serviceId,
 				reason: bookingAG24.blockReason,
+				// BUG-12: janela com agendamento ativo exige confirmação explícita.
+				confirmConflicts: true,
 			},
 			bookingAG24.paramsDefault201(adminParams.token),
 		)

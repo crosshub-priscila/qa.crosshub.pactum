@@ -137,6 +137,11 @@ ao menos um dos dois precisa estar presente. */
 	/** Bloqueia um serviço inteiro. Exigido quando `professionalId` é omitido. */
 	serviceId?: string | null
 	reason?: string
+	/**
+	 * BUG-12: sem isto, `POST /dashboard/appointments/blocks` sobre janela com
+	 * agendamento ativo responde 409 `APPOINTMENT_BLOCK_CONFLICT`.
+	 */
+	confirmConflicts?: boolean
 }
 
 export interface ICreatePackage {

@@ -19,11 +19,11 @@
       "ANL": 5
     },
     "unit": {
-      "casos": 45,
+      "casos": 46,
       "p0": 22,
       "extrair": 0,
       "porModulo": {
-        "AG": 10,
+        "AG": 11,
         "F": 6,
         "C": 6,
         "H": 5,
@@ -5953,6 +5953,41 @@
         "API-AG-20"
       ],
       "relacaoNota": null,
+      "naoVerificavel": null
+    },
+    {
+      "id": "UNIT-AG-11",
+      "modulo": "AG",
+      "moduloNome": "Agendamentos",
+      "camada": "UNIT",
+      "prioridade": "P1",
+      "alvo": "buildPackagePayload() · apps/dashboard/lib/package-payload.ts",
+      "fontes": [
+        {
+          "arquivo": "package-payload.ts",
+          "linhas": [],
+          "bruto": null
+        }
+      ],
+      "funcoes": [
+        "buildPackagePayload"
+      ],
+      "codigos": [
+        "apps/dashboard/lib/package-payload.ts"
+      ],
+      "superficie": "front",
+      "extrair": false,
+      "prova": "Aceita priceCents vindos do PriceInput (ex.: 120000 para R$ 1.200,00); recusa nome vazio, preço ausente/inválido, créditos inválidos, serviço ausente e validade inválida (BUG-37).",
+      "literais": [],
+      "campos": [
+        "priceCents",
+        "totalCredits",
+        "validityDays"
+      ],
+      "relacao": [
+        "BUG-37"
+      ],
+      "relacaoNota": "Regressão do valor com milhar no cadastro de pacote.",
       "naoVerificavel": null
     },
     {

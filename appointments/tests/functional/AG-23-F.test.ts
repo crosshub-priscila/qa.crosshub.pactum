@@ -19,7 +19,7 @@ describe(describeName.dashboard, () => {
 	let adminParams: IParamsDefault
 	let appointmentId: string
 
-	before("Agendamento já concluído — um dos cinco estados finais", async () => {
+	before("Agendamento cancelado pelo admin — um dos cinco estados finais", async () => {
 		adminParams = await authBusiness.loginAsTenantAdmin(
 			`${process.env.TENANT_SLUG}`,
 			`${process.env.TENANT_EMAIL}`,
@@ -74,12 +74,12 @@ describe(describeName.dashboard, () => {
 
 		await patchUpdateAppointmentStatus(
 			appointmentId,
-			{ status: bookingAG23.finalStatus },
+			{ status: bookingAG23.finalStatus, reason: bookingAG23.finalReason },
 			bookingAG23.paramsDefault200(adminParams.token),
 		)
 	})
 
-	it("[AG-23-F] - Estado final não volta: completed não pode virar approved", async () => {
+	it("[AG-23-F] - Estado final não volta: cancelled_by_admin não pode virar approved", async () => {
 		const { json } = await patchUpdateAppointmentStatus(
 			appointmentId,
 			{ status: bookingAG23.forbiddenStatus },
