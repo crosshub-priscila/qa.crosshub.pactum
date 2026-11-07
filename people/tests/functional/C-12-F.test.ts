@@ -78,13 +78,48 @@ describe(describeName.dashboard, () => {
 			"O cadastro foi apagado junto com o acesso — ele deveria ser preservado.",
 		)
 
-		await postPublicLogin(
+		const { json: removedLogin } = await postPublicLogin(
 			{
 				slug: `${process.env.TENANT_SLUG}`,
 				email,
 				password: peopleC12.pin,
 			},
+			peopleC12.paramsDefault403(),
+		)
+
+		assertTs.equal(
+			removedLogin.code,
+			peopleC12.accessRemovedCode,
+			"PIN correto com acesso removido deve devolver ACCESS_REMOVED.",
+		)
+		assertTs.equal(
+			removedLogin.message,
+			peopleC12.accessRemovedMessage,
+			"Mensagem de acesso desativado diverge do contrato BUG-20.",
+		)
+		assertTs.equal(
+			removedLogin.accessToken,
+			undefined,
+			"Não deve emitir token quando o acesso foi removido.",
+		)
+	})
+
+	it("[C-12-F] - Senha errada em conta revogada continua 401 genérico", async () => {
+		const { json } = await postPublicLogin(
+			{
+				slug: `${process.env.TENANT_SLUG}`,
+				email,
+				password: peopleC12.wrongPinAfterRevoke,
+			},
 			peopleC12.paramsDefault401(),
 		)
+
+		assertTs.equal(
+			json.message,
+			peopleC12.invalidCredentialsMessage,
+			"Senha errada não deve revelar que o acesso foi removido.",
+		)
+		assertTs.equal(json.code, undefined)
+		assertTs.equal(json.accessToken, undefined)
 	})
 })

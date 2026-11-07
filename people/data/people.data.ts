@@ -16,6 +16,8 @@ const peopleDefaults = {
 		preSetup.preSetupParamsDefault(400, 5, 500, token),
 	paramsDefault401: (token?: string) =>
 		preSetup.preSetupParamsDefault(401, 5, 500, token),
+	paramsDefault403: (token?: string) =>
+		preSetup.preSetupParamsDefault(403, 5, 500, token),
 	paramsDefault404: (token?: string) =>
 		preSetup.preSetupParamsDefault(404, 5, 500, token),
 	paramsDefault409: (token?: string) =>
@@ -150,11 +152,21 @@ export const peopleC11 = {
 	socialName: "Nome social do cliente",
 }
 
-/** `API-C-12` — remover acesso preserva o cadastro e derruba o login. */
+/**
+ * `API-C-12` — remover acesso preserva o cadastro e derruba o login.
+ *
+ * Desde BUG-20/21: PIN correto com acesso removido → 403 `ACCESS_REMOVED` (sem
+ * token); senha errada continua 401 genérico, igual a e-mail inexistente.
+ */
 export const peopleC12 = {
 	...peopleDefaults,
 	casePrefix: "[C-12]",
 	expectedStatus: "revoked",
+	accessRemovedCode: "ACCESS_REMOVED",
+	accessRemovedMessage:
+		"Seu acesso ao app foi desativado. Procure o estabelecimento para reativá-lo.",
+	wrongPinAfterRevoke: "9999",
+	invalidCredentialsMessage: "Credenciais inválidas.",
 }
 
 /**
