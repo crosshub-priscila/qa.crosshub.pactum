@@ -22,8 +22,10 @@ const calendarDefaults = {
 /**
  * `API-AG-04` — janelas já passadas somem da consulta do dia corrente.
  *
- * A agenda cobre o dia inteiro de hoje; a asserção compara cada janela com o
- * horário atual do fuso do tenant, sem depender de um horário fixo de execução.
+ * A regra de disponibilidade é montada em torno do horário atual do tenant
+ * (`availabilityAroundNow` em `date.utils`); `startTime`/`endTime` fixos aqui
+ * só documentam o antigo arranjo 00:00–23:00 e não são mais usados pelo teste
+ * (BUG-49: à noite o dia não comportava duas janelas futuras).
  */
 export const calendarAG04 = {
 	...calendarDefaults,
